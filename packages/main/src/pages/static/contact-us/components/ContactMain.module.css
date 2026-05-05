@@ -1,0 +1,20 @@
+.contactPageContainer {
+  padding: 5vh 0 0 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: "Lato", sans-serif;
+  --type-scale: 1;
+  --height-scale: 1;
+}
+
+.contactHead {
+  width: 100%;
+  margin-top: 20px;
+  text-align: left;
+}
+
+.boardContainer{
+  display: flex;
+  height: 100%;
+  width: 100%;
+}

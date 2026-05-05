@@ -1,0 +1,84 @@
+{
+  "users": [
+    {
+      "id": "90e27010-6f25-4245-831f-5a48bceee38d",
+      "email": "codex.qa.1777717885962@example.com",
+      "password": "VoiceTest123!",
+      "first_name": "Codex",
+      "last_name": "QA ",
+      "verified": true,
+      "verificationCode": null,
+      "token": "token-ecd44617-420e-4e76-96a8-54d3f5917091"
+    },
+    {
+      "id": "1dd09868-f1ba-4077-ab25-26ef673fdea6",
+      "email": "vadosprodashik@gmail.com",
+      "password": "123321фывА",
+      "first_name": "Dander",
+      "last_name": "Tr ",
+      "verified": true,
+      "verificationCode": null,
+      "token": "token-96fde3f0-8fd5-494c-85d6-f847c0b3c708"
+    }
+  ],
+  "organizations": [
+    {
+      "id": "org-55a191351209",
+      "name": "Codex Voice QA Workspace",
+      "workspace_url": "org-55a191351209.localhost",
+      "creator_email": "codex.qa.1777717885962@example.com",
+      "members": [
+        {
+          "_id": "member-e415e7bd55",
+          "email": "codex.qa.1777717885962@example.com"
+        }
+      ],
+      "memberEmails": [
+        "codex.qa.1777717885962@example.com"
+      ],
+      "installedPlugins": [
+        {
+          "plugin_id": "plugin-messaging-local",
+          "user_id": "member-e415e7bd55"
+        }
+      ]
+    },
+    {
+      "id": "org-6b1e23cf43c5",
+      "name": "VadimTest",
+      "workspace_url": "org-6b1e23cf43c5.localhost",
+      "creator_email": "vadosprodashik@gmail.com",
+      "members": [
+        {
+          "_id": "member-2ff8f258f2",
+          "email": "vadosprodashik@gmail.com"
+        }
+      ],
+      "memberEmails": [
+        "vadosprodashik@gmail.com"
+      ],
+      "installedPlugins": [
+        {
+          "plugin_id": "plugin-messaging-local",
+          "user_id": "member-2ff8f258f2"
+        }
+      ]
+    }
+  ],
+  "installs": [
+    {
+      "id": "8e5a0b5c-67f0-4538-b960-50b5b6d81f57",
+      "type": "chat",
+      "organization_id": "org-55a191351209",
+      "user_id": "member-e415e7bd55",
+      "created_at": "2026-05-02T10:33:51.968Z"
+    },
+    {
+      "id": "0b9967b8-dd4f-4984-83d2-62291880d79e",
+      "type": "chat",
+      "organization_id": "org-6b1e23cf43c5",
+      "user_id": "member-2ff8f258f2",
+      "created_at": "2026-05-02T16:19:44.177Z"
+    }
+  ]
+}
