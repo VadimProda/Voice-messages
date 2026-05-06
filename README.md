@@ -1,72 +1,152 @@
 # ZC_MAIN
 
-This is the Zuri Chat Frontend built with [React](https://reactjs.org/) (Frontend)
+Zuri Chat frontend built with React, Webpack 5, and single-spa microfrontends.
 
-## Getting Started.
+This repository now includes a full local end-to-end voice messaging flow for demonstration and testing without depending on the public Zuri backend.
 
-Make sure you have nodejs installed by running the following command:
+## Local Voice Messaging Implementation
 
-```bash
-node -v
-```
+The project contains a local backend adapter for voice-message development and demo scenarios.
 
-If the output is not the version of your nodejs installation, install nodejs from [here](https://nodejs.org/en/download/)
+With local mode you can verify:
 
-After installing nodejs install [yarn](https://www.npmjs.com/package/yarn)
-if you have it then install the project's dependencies:
+- signup, account verification, login, and workspace creation
+- microphone recording with timer, cancel, and auto-stop at 5 minutes
+- voice preview before sending
+- delete and re-record flow
+- local file upload and storage
+- persistence of voice messages in chat history
+- playback with play/pause, waveform seek, progress slider, and duration
+- download of recorded audio
+- playback speed `1x`, `1.5x`, `2x`
+- listened state
+- privacy toggle with persisted preference
+- optional transcription flow
+
+## Local Setup
+
+Install dependencies:
 
 ```bash
 yarn install
 ```
 
-## STARTING THE SERVER
+Copy environment variables:
 
-To start the whole application server
+```bash
+cp .env.example .env
+```
+
+Run the local frontend and local mock API together:
+
+```bash
+yarn dev:local
+```
+
+Or run them separately:
+
+```bash
+yarn mock-api
+```
+
+```bash
+powershell -ExecutionPolicy Bypass -File dev/start-local.ps1
+```
+
+Local URLs:
+
+- Frontend: [http://localhost:9000](http://localhost:9000)
+- Local API: [http://localhost:5050](http://localhost:5050)
+
+## Local Email Verification
+
+No real email is sent in local mode.
+
+Use this verification code during signup:
+
+```text
+123456
+```
+
+## Available Scripts
 
 ```bash
 yarn dev
-```
-
-Open [http://localhost:9000](http://localhost:9000) with your browser to see the result.
-
-### **Building**
-
-```bash
+yarn mock-api
+yarn dev:local
+yarn test
+yarn test:ui
+yarn test:messaging
 yarn build
-```
-
-To remove dist folder
-
-```bash
 yarn clean
-```
-
-To remove all node_modules
-
-```bash
 yarn clean-fresh
 ```
 
-## Editor setup
+## Tests
 
-We're using eslint for js linting, and prettier for code formating, make sure you install eslint and prettier plugins in your editor so you can
-see linting errors as you code and have your code formatted on save by prettier. If formatOnSave doesn't work please google how to set up
-format on save for the eslint & prettier plugins in your editor 🙃
+Run the full test suite:
+
+```bash
+yarn test
+```
+
+Run UI-focused tests only:
+
+```bash
+yarn test:ui
+```
+
+Run local messaging tests only:
+
+```bash
+yarn test:messaging
+```
+
+## Demo Flow
+
+Recommended defense/demo scenario:
+
+1. Start the app with `yarn dev:local`.
+2. Open [http://localhost:9000](http://localhost:9000).
+3. Sign up with a new account.
+4. Verify the account using code `123456`.
+5. Log in.
+6. Create a workspace.
+7. Open `all-dms`.
+8. Record a voice message.
+9. Show timer, stop, cancel, and preview states.
+10. Send the voice message.
+11. Play it back, seek on the waveform, change speed, and download it.
+12. Reload the page and show that the message remains in history.
+13. Optionally show `dev/mock-api/data/db.json` and `dev/mock-api/uploads/voice-messages` to demonstrate local persistence.
+
+## Architecture Notes
+
+For local verification, the project uses:
+
+- a mock API in [`dev/mock-api/server.js`](dev/mock-api/server.js)
+- local voice-file storage in `dev/mock-api/uploads/voice-messages`
+- a local messaging microfrontend in [`packages/zuri-plugin-messaging/src/root.component.js`](packages/zuri-plugin-messaging/src/root.component.js)
+- UI integration inside [`packages/ui/src/message-board/MessageBoard.jsx`](packages/ui/src/message-board/MessageBoard.jsx) and [`packages/ui/src/message-pane-input/MessagePaneInput.jsx`](packages/ui/src/message-pane-input/MessagePaneInput.jsx)
+
+## Limitations
+
+- The original production Zuri backend is not required for this local implementation.
+- Voice transcription is implemented as an optional placeholder flow and can be replaced with a real STT provider later.
+- Audio optimization is currently done on the client by recording with a lower bitrate. A dedicated server-side transcoding pipeline is not included.
+- Real microphone capture still depends on browser and OS permission approval at runtime.
 
 ## Contributing
 
-For detailed information on how to go about contributing to this project. Check out the
+Useful docs:
 
 - [Contribution Guide](docs/CONTRIBUTING.md)
 - [Styling Guide](docs/STYLING.md)
 
-**Before send PR or making a merge make sure you code is properly formatted.** You can easily do that by running
+Linting and formatting:
 
 ```bash
-yarn lint # to lint all files # in project directory
-yarn lint:js # to lint only js,jsx files # in project directory
-
-yarn prettify # to prettify files # in project directory
+yarn lint
+yarn lint:js
+yarn prettify
 ```
-
-you can also lint for all files in the repo by running that command in the root folder.
