@@ -78,3 +78,6 @@ dist
 
 packages/main/ignore
 packages/root-config/cypress.env.json
+
+dev/mock-api/uploads/voice-messages/*
+!dev/mock-api/uploads/voice-messages/.gitkeep
