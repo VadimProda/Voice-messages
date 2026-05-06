@@ -1,49 +1,49 @@
 # ZC_MAIN
 
-Zuri Chat frontend built with React, Webpack 5, and single-spa microfrontends.
+Фронтенд Zuri Chat на React, Webpack 5 и single-spa микрофронтендах.
 
-This repository now includes a full local end-to-end voice messaging flow for demonstration and testing without depending on the public Zuri backend.
+В этом репозитории теперь есть полноценная локальная end-to-end реализация голосовых сообщений, которую можно демонстрировать и тестировать без зависимости от публичного backend Zuri.
 
-## Local Voice Messaging Implementation
+## Локальная Реализация Голосовых Сообщений
 
-The project contains a local backend adapter for voice-message development and demo scenarios.
+В проект добавлен локальный backend adapter для разработки, тестирования и демонстрации голосовых сообщений.
 
-With local mode you can verify:
+В локальном режиме можно проверить:
 
-- signup, account verification, login, and workspace creation
-- microphone recording with timer, cancel, and auto-stop at 5 minutes
-- voice preview before sending
-- delete and re-record flow
-- local file upload and storage
-- persistence of voice messages in chat history
-- playback with play/pause, waveform seek, progress slider, and duration
-- download of recorded audio
-- playback speed `1x`, `1.5x`, `2x`
-- listened state
-- privacy toggle with persisted preference
-- optional transcription flow
+- регистрацию, подтверждение аккаунта, вход и создание workspace
+- запись с микрофона с таймером, отменой и автоостановкой через 5 минут
+- предпросмотр голосового сообщения перед отправкой
+- удаление записи и повторную запись
+- локальную загрузку и хранение аудиофайла
+- сохранение голосовых сообщений в истории чата
+- воспроизведение с `play/pause`, waveform, progress slider и отображением длительности
+- скачивание записанного аудио
+- переключение скорости `1x`, `1.5x`, `2x`
+- отметку о прослушивании
+- privacy toggle с сохранением настройки
+- optional flow для транскрипции
 
-## Local Setup
+## Локальный Запуск
 
-Install dependencies:
+Установить зависимости:
 
 ```bash
 yarn install
 ```
 
-Copy environment variables:
+Скопировать переменные окружения:
 
 ```bash
 cp .env.example .env
 ```
 
-Run the local frontend and local mock API together:
+Запустить локальный фронтенд и локальный mock API вместе:
 
 ```bash
 yarn dev:local
 ```
 
-Or run them separately:
+Либо запустить их отдельно:
 
 ```bash
 yarn mock-api
@@ -53,22 +53,22 @@ yarn mock-api
 powershell -ExecutionPolicy Bypass -File dev/start-local.ps1
 ```
 
-Local URLs:
+Локальные адреса:
 
 - Frontend: [http://localhost:9000](http://localhost:9000)
 - Local API: [http://localhost:5050](http://localhost:5050)
 
-## Local Email Verification
+## Локальное Подтверждение Email
 
-No real email is sent in local mode.
+В локальном режиме реальные письма не отправляются.
 
-Use this verification code during signup:
+Используй этот код подтверждения при регистрации:
 
 ```text
 123456
 ```
 
-## Available Scripts
+## Доступные Скрипты
 
 ```bash
 yarn dev
@@ -82,68 +82,68 @@ yarn clean
 yarn clean-fresh
 ```
 
-## Tests
+## Тесты
 
-Run the full test suite:
+Запуск полного набора тестов:
 
 ```bash
 yarn test
 ```
 
-Run UI-focused tests only:
+Запуск только UI-тестов:
 
 ```bash
 yarn test:ui
 ```
 
-Run local messaging tests only:
+Запуск только тестов локального messaging:
 
 ```bash
 yarn test:messaging
 ```
 
-## Demo Flow
+## Сценарий Для Демонстрации
 
-Recommended defense/demo scenario:
+Рекомендуемый сценарий для защиты:
 
-1. Start the app with `yarn dev:local`.
-2. Open [http://localhost:9000](http://localhost:9000).
-3. Sign up with a new account.
-4. Verify the account using code `123456`.
-5. Log in.
-6. Create a workspace.
-7. Open `all-dms`.
-8. Record a voice message.
-9. Show timer, stop, cancel, and preview states.
-10. Send the voice message.
-11. Play it back, seek on the waveform, change speed, and download it.
-12. Reload the page and show that the message remains in history.
-13. Optionally show `dev/mock-api/data/db.json` and `dev/mock-api/uploads/voice-messages` to demonstrate local persistence.
+1. Запустить проект через `yarn dev:local`.
+2. Открыть [http://localhost:9000](http://localhost:9000).
+3. Зарегистрировать новый аккаунт.
+4. Подтвердить аккаунт кодом `123456`.
+5. Выполнить вход.
+6. Создать workspace.
+7. Открыть `all-dms`.
+8. Записать голосовое сообщение.
+9. Показать таймер, stop, cancel и preview.
+10. Отправить голосовое сообщение.
+11. Воспроизвести его, перемотать по waveform, переключить скорость и скачать файл.
+12. Перезагрузить страницу и показать, что сообщение осталось в истории.
+13. При желании показать `dev/mock-api/data/db.json` и `dev/mock-api/uploads/voice-messages`, чтобы продемонстрировать локальное сохранение.
 
-## Architecture Notes
+## Архитектурные Заметки
 
-For local verification, the project uses:
+Для локальной проверки проект использует:
 
-- a mock API in [`dev/mock-api/server.js`](dev/mock-api/server.js)
-- local voice-file storage in `dev/mock-api/uploads/voice-messages`
-- a local messaging microfrontend in [`packages/zuri-plugin-messaging/src/root.component.js`](packages/zuri-plugin-messaging/src/root.component.js)
-- UI integration inside [`packages/ui/src/message-board/MessageBoard.jsx`](packages/ui/src/message-board/MessageBoard.jsx) and [`packages/ui/src/message-pane-input/MessagePaneInput.jsx`](packages/ui/src/message-pane-input/MessagePaneInput.jsx)
+- mock API в [`dev/mock-api/server.js`](dev/mock-api/server.js)
+- локальное хранение voice-файлов в `dev/mock-api/uploads/voice-messages`
+- локальный messaging microfrontend в [`packages/zuri-plugin-messaging/src/root.component.js`](packages/zuri-plugin-messaging/src/root.component.js)
+- UI-интеграцию в [`packages/ui/src/message-board/MessageBoard.jsx`](packages/ui/src/message-board/MessageBoard.jsx) и [`packages/ui/src/message-pane-input/MessagePaneInput.jsx`](packages/ui/src/message-pane-input/MessagePaneInput.jsx)
 
-## Limitations
+## Ограничения
 
-- The original production Zuri backend is not required for this local implementation.
-- Voice transcription is implemented as an optional placeholder flow and can be replaced with a real STT provider later.
-- Audio optimization is currently done on the client by recording with a lower bitrate. A dedicated server-side transcoding pipeline is not included.
-- Real microphone capture still depends on browser and OS permission approval at runtime.
+- Оригинальный production backend Zuri для этой локальной реализации не требуется.
+- Транскрипция реализована как optional placeholder flow и при необходимости может быть заменена на реальный STT provider.
+- Оптимизация аудио сейчас выполняется на клиенте через запись с пониженным битрейтом. Отдельный server-side transcoding pipeline не реализован.
+- Реальная запись с микрофона всё равно зависит от browser/OS permission в момент запуска.
 
-## Contributing
+## Вклад В Проект
 
-Useful docs:
+Полезные документы:
 
 - [Contribution Guide](docs/CONTRIBUTING.md)
 - [Styling Guide](docs/STYLING.md)
 
-Linting and formatting:
+Линтинг и форматирование:
 
 ```bash
 yarn lint
