@@ -1,8 +1,6 @@
 import React from "react";
-import axios from "axios";
 import { useHistory, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-//import { navigateToUrl } from "single-spa";
 
 import styles from "./Login.module.css";
 import {
@@ -11,6 +9,42 @@ import {
   GeneralLoading
 } from "../../components";
 import { useAuth } from "../../auth/use-auth";
+
+const DEFAULT_POST_LOGIN_PATH = "/choose-workspace";
+
+const PUBLIC_POST_LOGIN_BLOCKLIST = new Set([
+  "/",
+  "/login",
+  "/signup",
+  "/Signup",
+  "/legal",
+  "/terms",
+  "/privacy",
+  "/forgot-password",
+  "/reset-password"
+]);
+
+const getSafePostLoginPath = () => {
+  const lastLocation = window.localStorage.getItem("lastLocation");
+
+  if (!lastLocation) {
+    return DEFAULT_POST_LOGIN_PATH;
+  }
+
+  if (PUBLIC_POST_LOGIN_BLOCKLIST.has(lastLocation)) {
+    return DEFAULT_POST_LOGIN_PATH;
+  }
+
+  if (
+    lastLocation === "/choose-workspace" ||
+    lastLocation === "/create-workspace" ||
+    lastLocation.startsWith("/workspace/")
+  ) {
+    return lastLocation;
+  }
+
+  return DEFAULT_POST_LOGIN_PATH;
+};
 
 export default function Index() {
   const auth = useAuth();
@@ -26,71 +60,84 @@ export default function Index() {
   const [Loading, setLoading] = React.useState(false);
 
   React.useEffect(() => {
-    const userInfo = sessionStorage.getItem(`user`);
-    const redirect = sessionStorage.getItem(`workSpaceInviteRedirect`);
+    const userInfo = sessionStorage.getItem("user");
+    const redirect = sessionStorage.getItem("workSpaceInviteRedirect");
 
-    if (userInfo && userInfo !== null && redirect !== null)
+    if (userInfo && redirect) {
       history.push(redirect);
+    }
   }, [history]);
 
   const handleSubmit = async e => {
     e.preventDefault();
+
     setemailerror("");
     setpassworderror("");
+    seterror("");
 
-    if (!email) {
-      setemailerror(`Enter an email address`);
+    const normalizedEmail = email.trim().toLowerCase();
+
+    if (!normalizedEmail) {
+      setemailerror("Enter an email address");
       return;
     }
 
     if (!password) {
-      setpassworderror(`Enter a Password`);
+      setpassworderror("Enter a Password");
       return;
     }
-    auth
-      .signin(email, password)
-      .then(userData => {
-        //Store token in localstorage
-        sessionStorage.setItem("token", userData.user.token);
 
-        //Store token in localstorage
-        sessionStorage.setItem("session_id", userData.session_id);
+    setLoading(true);
 
-        //Store user copy in localstorage
-        sessionStorage.setItem("user", JSON.stringify(userData.user));
+    try {
+      const userData = await auth.signin(normalizedEmail, password);
 
-        sessionStorage.setItem(
-          "organisations",
-          JSON.stringify(userData.userWorkspaces)
-        );
+      const userWorkspaces = Array.isArray(userData.userWorkspaces)
+        ? userData.userWorkspaces
+        : [];
 
-        if (userData.userWorkspaces.length) {
-          const lastLocation = window.localStorage.getItem("lastLocation");
-          const redirectPath = lastLocation
-            ? lastLocation
-            : "/choose-workspace";
-          history.push(redirectPath);
-        } else {
-          history.push("/create-workspace");
+      if (userWorkspaces.length > 0) {
+        const redirectPath = getSafePostLoginPath();
+
+        if (redirectPath === DEFAULT_POST_LOGIN_PATH) {
+          window.localStorage.removeItem("lastLocation");
         }
-      })
-      .catch(error => {
-        const { data } = error.response;
-        console.error(data);
 
-        RegExp("not found").test(data.message) &&
-          setemailerror(
-            "Sorry, this email is not registered, try again or click Create an Account."
-          );
-        // RegExp(/Invalid login/).test(data.message) &&
-        RegExp("login credentials").test(data.message) &&
-          setpassworderror(
-            "Sorry, you have entered the wrong password. Try again or click Get help signing in."
-          );
+        history.push(redirectPath);
+        return;
+      }
 
-        //Render error message to the user
-        seterror(data.message); //Change this when there is a design
-      });
+      window.localStorage.removeItem("lastLocation");
+      history.push("/create-workspace");
+    } catch (loginError) {
+      const message =
+        loginError?.response?.data?.message ||
+        loginError?.message ||
+        "Unable to log in. Please try again.";
+
+      const normalizedMessage = message.toLowerCase();
+
+      if (
+        normalizedMessage.includes("not found") ||
+        normalizedMessage.includes("email") ||
+        normalizedMessage.includes("user")
+      ) {
+        setemailerror(
+          "Sorry, this email is not registered, try again or click Create an Account."
+        );
+      } else if (
+        normalizedMessage.includes("login credentials") ||
+        normalizedMessage.includes("password")
+      ) {
+        setpassworderror(
+          "Sorry, you have entered the wrong password. Try again or click Get help signing in."
+        );
+      }
+
+      seterror(message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -124,6 +171,7 @@ export default function Index() {
             setValue={setEmail}
             error={emailerror}
           />
+
           <AuthInputBox
             className={`${styles.inputElement}`}
             id="password"
@@ -141,13 +189,14 @@ export default function Index() {
                 className={`${styles.checkBox}`}
                 name="RememberMe"
                 type="checkbox"
-                value={rememberMe}
-                onClick={() => {
-                  setRememberMe(!rememberMe);
+                checked={Boolean(rememberMe)}
+                onChange={() => {
+                  setRememberMe(prev => !prev);
                 }}
               />
               {t("rememberMe")}
             </div>
+
             <div className={`${styles.right}`}>
               <Link
                 to="/reset-password"
@@ -155,7 +204,7 @@ export default function Index() {
               >
                 {t("forgotPassword")}
               </Link>
-              <span>Get help siging in</span>
+              <span>Get help signing in</span>
             </div>
           </div>
         </AuthFormWrapper>

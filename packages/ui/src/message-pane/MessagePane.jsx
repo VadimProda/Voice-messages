@@ -1,10 +1,29 @@
 import PropTypes from "prop-types";
-
 import MessageBox from "./components/message-box/MessageBox";
 import HoverItems from "./components/hover-items/HoverItems";
 import EmojiCard from "./components/emoji-card/EmojiCard";
-
 import styles from "./message-pane.module.css";
+
+const getSenderName = message => {
+  if (message?.sender?.sender_name) return message.sender.sender_name;
+  if (message?.username) return message.username;
+  return "Unknown User";
+};
+
+const getSenderImage = message => {
+  if (message?.sender?.sender_image_url) return message.sender.sender_image_url;
+  if (message?.sender_image_url) return message.sender_image_url;
+  return "";
+};
+
+const getInitial = name => {
+  return (
+    String(name || "?")
+      .trim()
+      .charAt(0)
+      .toUpperCase() || "?"
+  );
+};
 
 function MessagePane({
   message,
@@ -15,38 +34,66 @@ function MessagePane({
   onVoiceMessageListened
 }) {
   const messageEmojis = message.emojis || [];
+  const senderName = getSenderName(message);
+  const senderImage = getSenderImage(message);
 
   return (
     <div className={styles.MessageContainer}>
-      <div id="hoverItems" className={styles.hoverItemsContainer}>
-        <HoverItems
-          id={message._id}
-          handleShowMoreOptions={onShowMoreOptions}
-          handleShowEmoji={onShowEmoji}
-        />
-      </div>
-      <div className={styles.messageCardContainer}>
-        <MessageBox
-          id={message.message_id}
-          message={message}
-          onVoiceMessageListened={onVoiceMessageListened}
-        />
-      </div>
-      <div className={styles.emojiCardContainer}>
-        {messageEmojis.map((emoji, i) => (
-            <div
-              onClick={event => onEmojiClicked(event, emoji, message._id)}
-              key={i}
-            >
-              <EmojiCard currentUserId={currentUserId} emojiObject={emoji} />
+      <div className={styles.MessageRow}>
+        <div className={styles.AvatarColumn}>
+          {senderImage ? (
+            <img
+              className={styles.AvatarImage}
+              src={senderImage}
+              alt={senderName}
+            />
+          ) : (
+            <div className={styles.AvatarFallback}>
+              {getInitial(senderName)}
             </div>
-          ))}
+          )}
+        </div>
 
-        {messageEmojis.length > 0 ? (
-          <div onClick={event => onShowEmoji(message._id, event)}>
-            <EmojiCard emojiSvg={true} />
+        <div className={styles.ContentColumn}>
+          <div className={styles.hoverItemsContainer}>
+            <HoverItems
+              currentUserId={currentUserId}
+              message={message}
+              onShowEmoji={event =>
+                onShowEmoji &&
+                onShowEmoji(message._id || message.message_id, event)
+              }
+              onShowMoreOptions={event =>
+                onShowMoreOptions &&
+                onShowMoreOptions(message._id || message.message_id, event)
+              }
+            />
           </div>
-        ) : null}
+
+          <MessageBox
+            message={message}
+            onVoiceMessageListened={onVoiceMessageListened}
+          />
+
+          {messageEmojis.length > 0 ? (
+            <div className={styles.emojiCardContainer}>
+              {messageEmojis.map((emoji, i) => (
+                <EmojiCard
+                  key={`${emoji?.name || "emoji"}-${i}`}
+                  emoji={emoji}
+                  onEmojiClicked={event =>
+                    onEmojiClicked &&
+                    onEmojiClicked(
+                      event,
+                      emoji,
+                      message._id || message.message_id
+                    )
+                  }
+                />
+              ))}
+            </div>
+          ) : null}
+        </div>
       </div>
     </div>
   );
@@ -55,10 +102,10 @@ function MessagePane({
 MessagePane.propTypes = {
   currentUserId: PropTypes.string,
   message: PropTypes.object.isRequired,
-  onVoiceMessageListened: PropTypes.func,
-  onSendMessage: PropTypes.func,
-  onSendAttachedFile: PropTypes.func,
-  onReact: PropTypes.func
+  onEmojiClicked: PropTypes.func,
+  onShowEmoji: PropTypes.func,
+  onShowMoreOptions: PropTypes.func,
+  onVoiceMessageListened: PropTypes.func
 };
 
 export default MessagePane;

@@ -46,9 +46,22 @@ const getVoiceMessageFromMessage = message => {
 };
 
 export default function MessageBox({ message, onVoiceMessageListened }) {
-  const isImage = url => {
-    const allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif)$/i;
-    return allowedExtensions.exec(url);
+  const isImageFile = file => {
+    if (typeof file === "string") {
+      return (
+        /^data:image\//i.test(file) ||
+        /(\.jpg|\.jpeg|\.png|\.gif|\.webp)$/i.test(file)
+      );
+    }
+
+    const fileUrl = file?.url || file?.src || "";
+    const mimeType = file?.mimeType || file?.type || "";
+
+    return (
+      /^data:image\//i.test(fileUrl) ||
+      mimeType.startsWith("image/") ||
+      /(\.jpg|\.jpeg|\.png|\.gif|\.webp)$/i.test(fileUrl)
+    );
   };
   const voiceMessage = getVoiceMessageFromMessage(message);
   const renderableFiles = (message?.files || []).filter(file => {
@@ -69,16 +82,6 @@ export default function MessageBox({ message, onVoiceMessageListened }) {
 
   return (
     <div className="msg-container">
-      <div className="img__wrapper">
-        <img
-          src={
-            message.sender.sender_image_url ||
-            `https://i.pravatar.cc/300?u=${message.sender_id}`
-          }
-          alt="user-avatar"
-          className="user-avatar"
-        />
-      </div>
       {message.event?.action === "join:channel" ? (
         <span className="name">
           <span style={{ fontStyle: "italic", color: "grey" }}>
@@ -99,13 +102,15 @@ export default function MessageBox({ message, onVoiceMessageListened }) {
           <div className="message">
             {message.richUiData &&
               Object.keys(message.richUiData).length !== 0 && (
-              <RichTextRenderer richUiMessageConfig={message.richUiData} />
-            )}
+                <RichTextRenderer richUiMessageConfig={message.richUiData} />
+              )}
           </div>
           {voiceMessage ? (
             <div className={styles.voiceMessageWrapper}>
               <VoiceMessagePlayer
                 voiceMessage={voiceMessage}
+                showMeta={false}
+                showTranscript={false}
                 onListened={() =>
                   onVoiceMessageListened &&
                   onVoiceMessageListened(message, voiceMessage)
@@ -120,8 +125,19 @@ export default function MessageBox({ message, onVoiceMessageListened }) {
 
               return (
                 <div key={index}>
-                  {isImage(fileUrl) && <img src={fileUrl} className={styles.file} />}
-                  {!isImage(fileUrl) && <embed src={fileUrl} className={styles.file} />}
+                  {isImageFile(file) ? (
+                    <img
+                      src={fileUrl}
+                      alt={
+                        typeof file === "string"
+                          ? "message attachment"
+                          : file.fileName || file.name || "message attachment"
+                      }
+                      className={styles.file}
+                    />
+                  ) : (
+                    <embed src={fileUrl} className={styles.file} />
+                  )}
                 </div>
               );
             })}

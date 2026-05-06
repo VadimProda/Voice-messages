@@ -30,7 +30,8 @@
     "prepare": "husky install",
     "clean": "yarn clean:build",
     "clean:build": "rimraf './dist'",
-    "clean-fresh": "rimraf './node_modules' && lerna clean"
+    "clean-fresh": "rimraf './node_modules' && lerna clean",
+    "dev:local": "concurrently --kill-others-on-fail -m 1 \"yarn mock-api\" \"yarn dev\""
   },
   "devDependencies": {
     "babel-jest": "^27.0.6",

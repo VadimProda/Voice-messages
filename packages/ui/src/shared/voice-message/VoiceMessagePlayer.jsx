@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import { FiDownload, FiPause, FiPlay } from "react-icons/fi";
 
@@ -11,35 +11,59 @@ import {
 
 const PLAYBACK_RATES = [1, 1.5, 2];
 
+const clamp = (value, min, max) => {
+  return Math.min(Math.max(value, min), max);
+};
+
+const getSafeDuration = value => {
+  const duration = Number(value);
+
+  return Number.isFinite(duration) && duration > 0 ? duration : 0;
+};
+
 export default function VoiceMessagePlayer({
   voiceMessage,
   compact = false,
+  showMeta = true,
+  showTranscript = true,
   onListened
 }) {
   const normalizedVoiceMessage = useMemo(
     () => normalizeVoiceMessage(voiceMessage),
     [voiceMessage]
   );
+
   const audioRef = useRef(null);
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(normalizedVoiceMessage.duration || 0);
+  const [duration, setDuration] = useState(
+    getSafeDuration(normalizedVoiceMessage.duration)
+  );
   const [playbackRate, setPlaybackRate] = useState(1);
   const [hasListened, setHasListened] = useState(
     Boolean(normalizedVoiceMessage.listened)
   );
 
-  const waveform =
-    normalizedVoiceMessage.waveform.length > 0
+  const audioUrl = normalizedVoiceMessage.url;
+  const downloadUrl =
+    normalizedVoiceMessage.downloadUrl || normalizedVoiceMessage.url;
+
+  const waveform = useMemo(() => {
+    return normalizedVoiceMessage.waveform.length > 0
       ? normalizedVoiceMessage.waveform
       : getFallbackWaveform();
-  const progress = duration > 0 ? currentTime / duration : 0;
+  }, [normalizedVoiceMessage.waveform]);
+
+  const progress = duration > 0 ? clamp(currentTime / duration, 0, 1) : 0;
+  const progressPercent = Math.round(progress * 100);
+  const rangeValue = duration > 0 ? clamp(currentTime, 0, duration) : 0;
 
   useEffect(() => {
-    setDuration(normalizedVoiceMessage.duration || 0);
+    setDuration(getSafeDuration(normalizedVoiceMessage.duration));
     setCurrentTime(0);
     setIsPlaying(false);
+    setPlaybackRate(1);
     setHasListened(Boolean(normalizedVoiceMessage.listened));
   }, [
     normalizedVoiceMessage.duration,
@@ -53,15 +77,20 @@ export default function VoiceMessagePlayer({
     }
   }, [playbackRate]);
 
-  const markAsListened = () => {
-    if (!hasListened) {
-      setHasListened(true);
-      onListened && onListened(normalizedVoiceMessage);
+  const markAsListened = useCallback(() => {
+    if (hasListened) {
+      return;
     }
-  };
+
+    setHasListened(true);
+
+    if (typeof onListened === "function") {
+      onListened(normalizedVoiceMessage);
+    }
+  }, [hasListened, normalizedVoiceMessage, onListened]);
 
   const handleTogglePlayback = async () => {
-    if (!audioRef.current || !normalizedVoiceMessage.url) {
+    if (!audioRef.current || !audioUrl) {
       return;
     }
 
@@ -72,6 +101,7 @@ export default function VoiceMessagePlayer({
     }
 
     try {
+      audioRef.current.playbackRate = playbackRate;
       await audioRef.current.play();
       setIsPlaying(true);
       markAsListened();
@@ -81,11 +111,20 @@ export default function VoiceMessagePlayer({
   };
 
   const handleTimeUpdate = event => {
-    setCurrentTime(event.target.currentTime || 0);
+    const nextTime = getSafeDuration(event.target.currentTime);
+
+    setCurrentTime(nextTime);
+
+    if (duration > 0 && nextTime >= Math.min(2, duration * 0.8)) {
+      markAsListened();
+    }
   };
 
   const handleLoadedMetadata = event => {
-    setDuration(event.target.duration || normalizedVoiceMessage.duration || 0);
+    const metadataDuration = getSafeDuration(event.target.duration);
+    const fallbackDuration = getSafeDuration(normalizedVoiceMessage.duration);
+
+    setDuration(metadataDuration || fallbackDuration);
   };
 
   const handlePlaybackEnd = () => {
@@ -94,23 +133,55 @@ export default function VoiceMessagePlayer({
     markAsListened();
   };
 
-  const handleSeek = index => {
+  const seekToTime = nextTime => {
     if (!audioRef.current || duration <= 0) {
       return;
     }
 
-    const targetTime = (index / Math.max(1, waveform.length - 1)) * duration;
-    audioRef.current.currentTime = targetTime;
-    setCurrentTime(targetTime);
+    const safeTime = clamp(Number(nextTime) || 0, 0, duration);
+
+    audioRef.current.currentTime = safeTime;
+    setCurrentTime(safeTime);
   };
 
+  const handleWaveformSeek = index => {
+    if (duration <= 0) {
+      return;
+    }
+
+    const denominator = Math.max(1, waveform.length - 1);
+    const targetTime = (index / denominator) * duration;
+
+    seekToTime(targetTime);
+  };
+
+  const handleSliderChange = event => {
+    seekToTime(event.target.value);
+  };
+
+  const handlePlaybackRateToggle = () => {
+    const currentRateIndex = PLAYBACK_RATES.indexOf(playbackRate);
+    const nextRateIndex = (currentRateIndex + 1) % PLAYBACK_RATES.length;
+    const nextRate = PLAYBACK_RATES[nextRateIndex];
+
+    setPlaybackRate(nextRate);
+
+    if (audioRef.current) {
+      audioRef.current.playbackRate = nextRate;
+    }
+  };
+
+  const playerClassName = [styles.player, compact ? styles.compact : ""]
+    .filter(Boolean)
+    .join(" ");
+
   return (
-    <div className={`${styles.player} ${compact ? styles.compact : ""}`}>
+    <article className={playerClassName}>
       <audio
-        className={styles.hiddenAudio}
         ref={audioRef}
+        className={styles.hiddenAudio}
+        src={audioUrl}
         preload="metadata"
-        src={normalizedVoiceMessage.url}
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
         onPause={() => setIsPlaying(false)}
@@ -122,33 +193,58 @@ export default function VoiceMessagePlayer({
         <button
           type="button"
           className={styles.playButton}
-          aria-label={isPlaying ? "Pause voice message" : "Play voice message"}
           onClick={handleTogglePlayback}
+          disabled={!audioUrl}
+          aria-label={isPlaying ? "Pause voice message" : "Play voice message"}
+          title={isPlaying ? "Pause voice message" : "Play voice message"}
         >
           {isPlaying ? <FiPause size={18} /> : <FiPlay size={18} />}
         </button>
 
         <div className={styles.timeline}>
-          <div className={styles.waveform}>
+          <div
+            className={styles.waveform}
+            aria-label={`Voice message waveform. ${progressPercent}% played.`}
+          >
             {waveform.map((height, index) => {
-              const played = progress >= index / waveform.length;
+              const played = progress >= index / Math.max(1, waveform.length);
 
               return (
                 <button
+                  key={`${height}-${index}`}
                   type="button"
-                  key={`waveform-bar-${index}`}
-                  className={`${styles.bar} ${
-                    played ? styles.barPlayed : ""
-                  }`}
-                  style={{ height: `${height}%` }}
-                  onClick={() => handleSeek(index)}
+                  className={`${styles.bar} ${played ? styles.barPlayed : ""}`}
+                  style={{ height: `${Math.max(12, height)}%` }}
+                  onClick={() => handleWaveformSeek(index)}
+                  disabled={duration <= 0}
                   aria-label={`Seek to ${Math.round(
-                    (index / waveform.length) * 100
+                    (index / Math.max(1, waveform.length - 1)) * 100
                   )}%`}
                 />
               );
             })}
           </div>
+
+          <label className={styles.progressSliderLabel}>
+            <span className={styles.visuallyHidden}>
+              Voice message playback progress
+            </span>
+
+            <input
+              className={styles.progressSlider}
+              type="range"
+              min="0"
+              max={duration || 0}
+              step="0.1"
+              value={rangeValue}
+              disabled={duration <= 0}
+              onChange={handleSliderChange}
+              aria-label="Voice message playback progress"
+              aria-valuetext={`${formatAudioTime(
+                currentTime
+              )} of ${formatAudioTime(duration)}`}
+            />
+          </label>
 
           <div className={styles.timeRow}>
             <span>{formatAudioTime(currentTime)}</span>
@@ -160,62 +256,73 @@ export default function VoiceMessagePlayer({
           <button
             type="button"
             className={styles.rateButton}
-            onClick={() => {
-              const rateIndex =
-                (PLAYBACK_RATES.indexOf(playbackRate) + 1) %
-                PLAYBACK_RATES.length;
-              setPlaybackRate(PLAYBACK_RATES[rateIndex]);
-            }}
+            onClick={handlePlaybackRateToggle}
+            aria-label={`Playback speed ${playbackRate}x. Click to change.`}
+            title="Change playback speed"
           >
             {playbackRate}x
           </button>
 
-          <a
-            className={styles.downloadButton}
-            href={normalizedVoiceMessage.url}
-            download={normalizedVoiceMessage.fileName}
-          >
-            <FiDownload size={16} />
-          </a>
+          {downloadUrl ? (
+            <a
+              className={styles.downloadButton}
+              href={downloadUrl}
+              download={normalizedVoiceMessage.fileName}
+              aria-label={`Download ${normalizedVoiceMessage.fileName}`}
+              title={`Download ${normalizedVoiceMessage.fileName}`}
+            >
+              <FiDownload size={16} />
+              <span className={styles.downloadText}>Download</span>
+            </a>
+          ) : (
+            <span className={styles.unavailableDownload}>No download</span>
+          )}
         </div>
       </div>
 
-      <div className={styles.metaRow}>
-        <span>
-          {normalizedVoiceMessage.fileName}
-          {normalizedVoiceMessage.sizeLabel
-            ? ` - ${normalizedVoiceMessage.sizeLabel}`
-            : ""}
-        </span>
+      {showMeta ? (
+        <div className={styles.metaRow}>
+          <div className={styles.metaText}>
+            <span className={styles.fileName}>
+              {normalizedVoiceMessage.fileName}
+            </span>
 
-        {hasListened ? (
-          <span className={styles.status}>Listened</span>
-        ) : (
-          <span>
-            {normalizedVoiceMessage.transcriptStatus === "loading"
+            {normalizedVoiceMessage.sizeLabel ? (
+              <span>{normalizedVoiceMessage.sizeLabel}</span>
+            ) : null}
+          </div>
+
+          <span className={styles.status}>
+            {hasListened
+              ? "Listened"
+              : normalizedVoiceMessage.transcriptStatus === "loading"
               ? "Transcribing..."
               : "New voice message"}
           </span>
-        )}
-      </div>
-
-      {normalizedVoiceMessage.transcript ? (
-        <div className={styles.transcript}>
-          {normalizedVoiceMessage.transcript}
         </div>
       ) : null}
-    </div>
+
+      {showTranscript && normalizedVoiceMessage.transcript ? (
+        <p className={styles.transcript}>{normalizedVoiceMessage.transcript}</p>
+      ) : null}
+    </article>
   );
 }
 
 VoiceMessagePlayer.propTypes = {
   compact: PropTypes.bool,
   onListened: PropTypes.func,
+  showMeta: PropTypes.bool,
+  showTranscript: PropTypes.bool,
   voiceMessage: PropTypes.shape({
     downloadUrl: PropTypes.string,
     duration: PropTypes.number,
+    durationSeconds: PropTypes.number,
+    file: PropTypes.object,
+    fileId: PropTypes.string,
     fileName: PropTypes.string,
     fileUrl: PropTypes.string,
+    id: PropTypes.string,
     listened: PropTypes.bool,
     mimeType: PropTypes.string,
     name: PropTypes.string,

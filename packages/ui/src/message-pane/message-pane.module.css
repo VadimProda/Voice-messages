@@ -1,55 +1,129 @@
 .MessageContainer {
-    padding: 14px 16px;
-    position: relative;
+  padding: 14px 16px;
+  position: relative;
 }
 
 .MessageContainer:hover {
-    background-color: #f1fffa;
+  background-color: #f1fffa;
 }
 
 .MessageContainer:hover .hoverItemsContainer {
-    display: flex;
+  display: flex;
 }
 
-.MessageContainer .hoverItemsContainer {
-    display: none;
+.MessageRow {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 12px;
+  align-items: flex-start;
 }
 
-.MessageContainer .emojiCardContainer {
-    margin-top: 10px;
-    margin-left: 53px;
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
+.AvatarColumn {
+  width: 44px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+
+.AvatarImage,
+.AvatarFallback {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  border-radius: 10px;
+  object-fit: cover;
+  display: block;
+  overflow: hidden;
+}
+
+.AvatarImage {
+  border: 1px solid #dbe6e0;
+  background: #fff;
+}
+
+.AvatarFallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #13795b;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.ContentColumn {
+  min-width: 0;
+  position: relative;
+}
+
+.hoverItemsContainer {
+  display: none;
+}
+
+.emojiCardContainer {
+  margin-top: 10px;
+  margin-left: 0;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 
 .fileWrapper {
-    display: flex;
-    align-items: center;
-    gap: 1em;
-    flex-wrap: wrap;
-    border-radius: 20px;
-    margin: 10px 0;
-    cursor: pointer;
-
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  flex-wrap: wrap;
+  border-radius: 20px;
+  margin: 10px 0;
+  cursor: pointer;
 }
+
 .file {
-    border-radius: 10px;
-    cursor: pointer;
-    max-width: 250px;
+  border-radius: 10px;
+  cursor: pointer;
+  max-width: 250px;
+  max-height: 250px;
+  width: auto;
+  height: auto;
+  object-fit: cover;
 }
 
 .voiceMessageWrapper {
-    margin: 12px 0;
-    max-width: 640px;
+  margin: 12px 0;
+  max-width: 640px;
 }
 
 @media (max-width: 640px) {
-    .voiceMessageWrapper {
-        max-width: 100%;
-    }
+  .MessageContainer {
+    padding: 12px 10px;
+  }
 
-    .file {
-        max-width: min(100%, 220px);
-    }
+  .MessageRow {
+    grid-template-columns: 38px minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .AvatarColumn {
+    width: 38px;
+  }
+
+  .AvatarImage,
+  .AvatarFallback {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    border-radius: 8px;
+  }
+
+  .voiceMessageWrapper {
+    max-width: 100%;
+  }
+
+  .file {
+    max-width: min(100%, 220px);
+    max-height: 220px;
+  }
 }

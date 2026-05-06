@@ -14,6 +14,9 @@ jest.mock("../../ui/src/message-board/MessageBoard", () => props => {
       <div data-testid="sample-listened">
         {String(Boolean(props.messages[1]?.voiceMessage?.listened))}
       </div>
+      <div data-testid="voice-privacy-enabled">
+        {String(Boolean(props.voiceMessageConfig?.defaultPrivacyEnabled))}
+      </div>
       <button
         type="button"
         onClick={async () => {
@@ -46,6 +49,12 @@ jest.mock("../../ui/src/message-board/MessageBoard", () => props => {
       >
         Mark sample listened
       </button>
+      <button
+        type="button"
+        onClick={() => props.voiceMessageConfig.onPrivacyChange(false)}
+      >
+        Disable privacy
+      </button>
     </div>
   );
 });
@@ -66,7 +75,46 @@ class MockFileReader {
 }
 
 describe("local messaging root integration", () => {
+  const originalFetch = global.fetch;
   const originalFileReader = global.FileReader;
+  const initialMessages = [
+    {
+      _id: "local-message-1",
+      emojis: [],
+      message_id: 1,
+      richUiData: {
+        blocks: [{ key: "a", text: "Welcome", type: "unstyled" }],
+        entityMap: {}
+      },
+      sender: {
+        sender_image_url: "",
+        sender_name: "Zuri Guide"
+      },
+      sender_id: "system-guide",
+      timestamp: Date.now() - 1000
+    },
+    {
+      _id: "local-message-2",
+      emojis: [],
+      message_id: 2,
+      richUiData: {
+        blocks: [{ key: "b", text: "Voice sample", type: "unstyled" }],
+        entityMap: {}
+      },
+      sender: {
+        sender_image_url: "",
+        sender_name: "Zuri Guide"
+      },
+      sender_id: "system-guide",
+      timestamp: Date.now(),
+      voiceMessage: {
+        fileName: "sample.ogg",
+        listened: false,
+        url: "https://example.com/sample.ogg",
+        waveform: [18, 36, 54]
+      }
+    }
+  ];
 
   beforeEach(() => {
     localStorage.clear();
@@ -83,9 +131,134 @@ describe("local messaging root integration", () => {
     localStorage.setItem("currentWorkspace", "workspace-1");
     localStorage.setItem("orgName", "Codex Workspace");
     global.FileReader = MockFileReader;
+    global.fetch = jest.fn(async (url, options = {}) => {
+      if (
+        String(url).includes("/users/local%40example.com/preferences/voice") &&
+        (!options.method || options.method === "GET")
+      ) {
+        return {
+          ok: true,
+          text: async () =>
+            JSON.stringify({
+              data: {
+                email: "local@example.com",
+                enabled: true
+              }
+            })
+        };
+      }
+
+      if (
+        String(url).includes("/organizations/workspace-1/messages") &&
+        (!options.method || options.method === "GET")
+      ) {
+        return {
+          ok: true,
+          text: async () =>
+            JSON.stringify({
+              data: {
+                channel: {
+                  id: "channel-1",
+                  name: "all-dms"
+                },
+                messages: initialMessages
+              }
+            })
+        };
+      }
+
+      if (String(url).includes("/files/voice")) {
+        return {
+          ok: true,
+          text: async () =>
+            JSON.stringify({
+              data: {
+                id: "voice-file-1",
+                fileId: "voice-file-1",
+                fileName: "test-voice.ogg",
+                mimeType: "audio/ogg",
+                duration: 14,
+                sizeLabel: "1 KB",
+                url: "data:audio/ogg;base64,dm9pY2U=",
+                downloadUrl: "data:audio/ogg;base64,dm9pY2U=",
+                waveform: [18, 36, 54]
+              }
+            })
+        };
+      }
+
+      if (
+        String(url).includes("/organizations/workspace-1/messages") &&
+        options.method === "POST"
+      ) {
+        const body = JSON.parse(options.body);
+
+        return {
+          ok: true,
+          text: async () =>
+            JSON.stringify({
+              data: {
+                _id: "saved-message-3",
+                emojis: [],
+                files: body.files,
+                message_id: 3,
+                richUiData: body.richUiData,
+                sender: {
+                  sender_image_url: "",
+                  sender_name: "Local Tester"
+                },
+                sender_id: "local-user",
+                timestamp: Date.now(),
+                voiceMessage: body.voiceMessage
+              }
+            })
+        };
+      }
+
+      if (
+        String(url).includes("/users/local%40example.com/preferences/voice") &&
+        options.method === "PATCH"
+      ) {
+        const body = JSON.parse(options.body);
+
+        return {
+          ok: true,
+          text: async () =>
+            JSON.stringify({
+              data: {
+                email: "local@example.com",
+                enabled: body.enabled
+              }
+            })
+        };
+      }
+
+      if (String(url).includes("/messages/local-message-2/listened")) {
+        return {
+          ok: true,
+          text: async () =>
+            JSON.stringify({
+              data: {
+                ...initialMessages[1],
+                voiceMessage: {
+                  ...initialMessages[1].voiceMessage,
+                  listened: true
+                }
+              }
+            })
+        };
+      }
+
+      return {
+        ok: false,
+        text: async () =>
+          JSON.stringify({ message: `Unhandled request: ${url}` })
+      };
+    });
   });
 
   afterEach(() => {
+    global.fetch = originalFetch;
     global.FileReader = originalFileReader;
     latestMessageBoardProps = null;
     jest.clearAllMocks();
@@ -94,11 +267,21 @@ describe("local messaging root integration", () => {
   test("loads sample data, appends voice messages and updates listened status", async () => {
     render(<Root />);
 
-    expect(screen.getByTestId("message-count")).toHaveTextContent("2");
-    expect(latestMessageBoardProps.voiceMessageConfig.enabled).toBe(true);
-    expect(latestMessageBoardProps.messages[1].voiceMessage.listened).toBe(false);
+    await waitFor(() => {
+      expect(screen.getByTestId("message-count")).toHaveTextContent("2");
+    });
 
-    fireEvent.click(screen.getByRole("button", { name: "Append voice message" }));
+    expect(latestMessageBoardProps.voiceMessageConfig.enabled).toBe(true);
+    expect(screen.getByTestId("voice-privacy-enabled")).toHaveTextContent(
+      "true"
+    );
+    expect(latestMessageBoardProps.messages[1].voiceMessage.listened).toBe(
+      false
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Append voice message" })
+    );
 
     await waitFor(() => {
       expect(screen.getByTestId("message-count")).toHaveTextContent("3");
@@ -112,10 +295,20 @@ describe("local messaging root integration", () => {
       })
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Mark sample listened" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Mark sample listened" })
+    );
 
     await waitFor(() => {
       expect(screen.getByTestId("sample-listened")).toHaveTextContent("true");
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Disable privacy" }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("voice-privacy-enabled")).toHaveTextContent(
+        "false"
+      );
     });
   });
 });

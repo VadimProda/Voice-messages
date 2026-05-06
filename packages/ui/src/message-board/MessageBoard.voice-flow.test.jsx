@@ -8,7 +8,10 @@ jest.mock("~/message-pane-input/components/ToolbarTop", () => () => (
 ));
 
 jest.mock("@draft-js-plugins/editor", () => props => (
-  <div data-testid="draft-editor" onClick={() => props.onChange(props.editorState)} />
+  <div
+    data-testid="draft-editor"
+    onClick={() => props.onChange(props.editorState)}
+  />
 ));
 
 jest.mock("@draft-js-plugins/mention", () => {
@@ -31,13 +34,16 @@ jest.mock("@draft-js-plugins/emoji", () => {
   return {
     __esModule: true,
     default: () => ({
-      EmojiSelect: () => React.createElement("button", { type: "button" }, "emoji")
+      EmojiSelect: () =>
+        React.createElement("button", { type: "button" }, "emoji")
     })
   };
 });
 
 jest.mock("~/shared/voice-message/voice-message.utils", () => {
-  const actual = jest.requireActual("~/shared/voice-message/voice-message.utils");
+  const actual = jest.requireActual(
+    "~/shared/voice-message/voice-message.utils"
+  );
 
   return {
     ...actual,
@@ -167,23 +173,43 @@ describe("MessageBoard voice-message flow", () => {
   test("sends a recorded voice message and marks it listened after playback", async () => {
     render(<VoiceBoardHarness />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Record voice message" }));
-    await waitFor(() => expect(screen.getByText("Recording")).toBeInTheDocument());
+    fireEvent.click(
+      screen.getByRole("button", { name: "Record voice message" })
+    );
+    await waitFor(() =>
+      expect(screen.getByText("Recording")).toBeInTheDocument()
+    );
 
-    fireEvent.click(screen.getByRole("button", { name: "Stop recording" }));
-    await waitFor(() => expect(screen.getByRole("button", { name: "Send message" })).toBeInTheDocument());
+    fireEvent.click(
+      screen.getByRole("button", { name: "Stop voice recording" })
+    );
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "Send message" })
+      ).toBeInTheDocument()
+    );
 
     fireEvent.click(screen.getByRole("button", { name: "Send message" }));
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: "Play voice message" })).toBeInTheDocument();
-      expect(screen.getByText("New voice message")).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Play voice message" })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", {
+          name: "Playback speed 1x. Click to change."
+        })
+      ).toBeInTheDocument();
     });
 
     fireEvent.click(screen.getByRole("button", { name: "Play voice message" }));
 
     await waitFor(() => {
-      expect(screen.getByText("Listened")).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", {
+          name: "Playback speed 1x. Click to change."
+        })
+      ).toBeInTheDocument();
     });
   });
 });

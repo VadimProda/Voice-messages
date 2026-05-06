@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 const UserOrganization = ({ organizations, user }) => {
   const [newOrganizations, setNewOrganizations] = useState([]);
   const currentPlugin = localStorage.getItem("currentPlugin") || "plugin-chat";
-  const currentPluginRoom = localStorage.getItem("currentRoom") || "";
+  const currentPluginRoom = localStorage.getItem("currentRoom") || "all-dms";
   const defaultPluginRoom = `${currentPlugin}/${currentPluginRoom}`;
 
   useEffect(() => {

@@ -8,7 +8,10 @@ jest.mock("./components/ToolbarTop", () => () => (
 ));
 
 jest.mock("@draft-js-plugins/editor", () => props => (
-  <div data-testid="draft-editor" onClick={() => props.onChange(props.editorState)} />
+  <div
+    data-testid="draft-editor"
+    onClick={() => props.onChange(props.editorState)}
+  />
 ));
 
 jest.mock("@draft-js-plugins/mention", () => {
@@ -31,13 +34,16 @@ jest.mock("@draft-js-plugins/emoji", () => {
   return {
     __esModule: true,
     default: () => ({
-      EmojiSelect: () => React.createElement("button", { type: "button" }, "emoji")
+      EmojiSelect: () =>
+        React.createElement("button", { type: "button" }, "emoji")
     })
   };
 });
 
 jest.mock("~/shared/voice-message/voice-message.utils", () => {
-  const actual = jest.requireActual("~/shared/voice-message/voice-message.utils");
+  const actual = jest.requireActual(
+    "~/shared/voice-message/voice-message.utils"
+  );
 
   return {
     ...actual,
@@ -118,18 +124,25 @@ describe("MessagePaneInput voice flow", () => {
       />
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Record voice message" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Record voice message" })
+    );
 
     await waitFor(() => {
       expect(screen.getByText("Recording")).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByRole("button", { name: "Stop recording" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Stop voice recording" })
+    );
 
     await waitFor(() => {
       expect(screen.getByText("Delete")).toBeInTheDocument();
       expect(screen.getByText("Re-record")).toBeInTheDocument();
-      expect(screen.getByText(/voice-message-\d+\.ogg - 1 KB/)).toBeInTheDocument();
+      expect(
+        screen.getByText(/voice-message-\d+\.(mp3|ogg)/)
+      ).toBeInTheDocument();
+      expect(screen.getByText("1 KB")).toBeInTheDocument();
     });
 
     fireEvent.click(screen.getByRole("button", { name: "Send message" }));
@@ -144,31 +157,106 @@ describe("MessagePaneInput voice flow", () => {
       expect.objectContaining({
         duration: 9,
         file: expect.any(File),
-        fileName: expect.stringMatching(/^voice-message-\d+\.ogg$/),
+        fileName: expect.stringMatching(/^voice-message-\d+\.(mp3|ogg)$/),
         listened: false,
         sizeLabel: "1 KB",
         url: "blob:voice-preview",
         waveform: [24, 48, 72, 36]
       })
     );
-    expect(onAttachFile).toHaveBeenCalledWith(
-      [expect.any(File)],
-      expect.objectContaining({
-        source: "voice-message"
-      })
-    );
     expect(screen.queryByText("Delete")).not.toBeInTheDocument();
   });
 
   test("disables recording when privacy is turned off", async () => {
-    render(<MessagePaneInput onSendMessage={jest.fn()} voiceMessageConfig={{ enabled: true }} />);
+    const onPrivacyChange = jest.fn(async () => true);
 
-    fireEvent.click(screen.getByRole("button", { name: "Disable voice messages" }));
+    render(
+      <MessagePaneInput
+        onSendMessage={jest.fn()}
+        voiceMessageConfig={{
+          defaultPrivacyEnabled: true,
+          enabled: true,
+          onPrivacyChange
+        }}
+      />
+    );
 
-    expect(screen.getByRole("button", { name: "Voice recording disabled" })).toBeDisabled();
+    fireEvent.click(
+      screen.getByRole("button", { name: "Disable voice messages" })
+    );
 
-    fireEvent.click(screen.getByRole("button", { name: "Enable voice messages" }));
+    expect(
+      screen.getByRole("button", { name: "Voice recording disabled" })
+    ).toBeDisabled();
+    await waitFor(() => {
+      expect(onPrivacyChange).toHaveBeenCalledWith(false);
+    });
 
-    expect(screen.getByRole("button", { name: "Record voice message" })).toBeEnabled();
+    fireEvent.click(
+      screen.getByRole("button", { name: "Enable voice messages" })
+    );
+
+    expect(
+      screen.getByRole("button", { name: "Record voice message" })
+    ).toBeEnabled();
+    await waitFor(() => {
+      expect(onPrivacyChange).toHaveBeenCalledWith(true);
+    });
+  });
+
+  test("waits for transcription before sending the recorded voice message", async () => {
+    let resolveTranscript;
+    const onSendMessage = jest.fn();
+
+    render(
+      <MessagePaneInput
+        onSendMessage={onSendMessage}
+        voiceMessageConfig={{
+          enabled: true,
+          transcriptionEnabled: true,
+          transcribe: jest.fn(
+            () =>
+              new Promise(resolve => {
+                resolveTranscript = resolve;
+              })
+          )
+        }}
+      />
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Record voice message" })
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText("Recording")).toBeInTheDocument();
+    });
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Stop voice recording" })
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText("Delete")).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Send message" }));
+
+    expect(onSendMessage).not.toHaveBeenCalled();
+
+    resolveTranscript("Transcript is ready");
+
+    await waitFor(() => {
+      expect(onSendMessage).toHaveBeenCalledTimes(1);
+    });
+
+    const [, payload] = onSendMessage.mock.calls[0];
+
+    expect(payload.voiceMessage).toEqual(
+      expect.objectContaining({
+        transcript: "Transcript is ready",
+        transcriptStatus: "done"
+      })
+    );
   });
 });

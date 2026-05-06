@@ -149,10 +149,10 @@ export default function Index() {
               className={`${styles.checkBox}`}
               name="tos"
               type="checkbox"
-              value={tos}
+              checked={tos}
               data-cy="auth_form_agreement_checkbox"
-              onClick={() => {
-                setTos(!tos);
+              onChange={() => {
+                setTos(prevState => !prevState);
               }}
               // onFocus={displayImage}
             />

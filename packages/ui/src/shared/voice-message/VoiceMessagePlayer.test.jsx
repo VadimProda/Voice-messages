@@ -30,9 +30,35 @@ describe("VoiceMessagePlayer", () => {
       />
     );
 
-    expect(screen.getByText("daily-sync.ogg - 512 KB")).toBeInTheDocument();
+    expect(screen.getByText("daily-sync.ogg")).toBeInTheDocument();
+    expect(screen.getByText("512 KB")).toBeInTheDocument();
     expect(screen.getByText("Transcribing...")).toBeInTheDocument();
     expect(screen.getByText("Daily update transcript")).toBeInTheDocument();
+  });
+
+  test("can hide metadata and transcript for compact chat history rendering", () => {
+    render(
+      <VoiceMessagePlayer
+        showMeta={false}
+        showTranscript={false}
+        voiceMessage={{
+          duration: 42,
+          fileName: "daily-sync.ogg",
+          sizeLabel: "512 KB",
+          transcript: "Daily update transcript",
+          transcriptStatus: "done",
+          url: "https://example.com/daily-sync.ogg",
+          waveform: [16, 32, 48, 64]
+        }}
+      />
+    );
+
+    expect(screen.queryByText("daily-sync.ogg")).not.toBeInTheDocument();
+    expect(screen.queryByText("512 KB")).not.toBeInTheDocument();
+    expect(screen.queryByText("Listened")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Daily update transcript")
+    ).not.toBeInTheDocument();
   });
 
   test("cycles playback speed on click", () => {
@@ -47,12 +73,26 @@ describe("VoiceMessagePlayer", () => {
       />
     );
 
-    const speedButton = screen.getByRole("button", { name: "1x" });
+    const speedButton = screen.getByRole("button", {
+      name: "Playback speed 1x. Click to change."
+    });
 
     fireEvent.click(speedButton);
-    expect(screen.getByRole("button", { name: "1.5x" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", {
+        name: "Playback speed 1.5x. Click to change."
+      })
+    ).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "1.5x" }));
-    expect(screen.getByRole("button", { name: "2x" })).toBeInTheDocument();
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Playback speed 1.5x. Click to change."
+      })
+    );
+    expect(
+      screen.getByRole("button", {
+        name: "Playback speed 2x. Click to change."
+      })
+    ).toBeInTheDocument();
   });
 });

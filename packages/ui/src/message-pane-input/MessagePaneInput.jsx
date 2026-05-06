@@ -19,7 +19,7 @@ import "@draft-js-plugins/mention/lib/plugin.css";
 import "!style-loader!css-loader!@draft-js-plugins/emoji/lib/plugin.css";
 import "!style-loader!css-loader!@draft-js-plugins/mention/lib/plugin.css";
 import { BsFillFileEarmarkFill } from "react-icons/bs";
-import { FiRefreshCcw, FiTrash2 } from "react-icons/fi";
+import { FiMicOff, FiRefreshCcw, FiSquare, FiTrash2 } from "react-icons/fi";
 
 import "./message-editor-input.css";
 import ToolbarBottom from "./components/ToolbarBottom";
@@ -126,11 +126,16 @@ const removeFromSessionStorage = () => {
 
 const buildVoiceConfig = config => ({
   enabled: config?.enabled !== false,
+  defaultPrivacyEnabled:
+    typeof config?.defaultPrivacyEnabled === "boolean"
+      ? config.defaultPrivacyEnabled
+      : config?.enabled !== false,
   maxDurationSeconds:
     config?.maxDurationSeconds ||
     DEFAULT_VOICE_MESSAGE_LIMITS.maxDurationSeconds,
   maxFileSizeMb:
     config?.maxFileSizeMb || DEFAULT_VOICE_MESSAGE_LIMITS.maxFileSizeMb,
+  onPrivacyChange: config?.onPrivacyChange,
   transcriptionEnabled: Boolean(config?.transcriptionEnabled),
   transcribe: config?.transcribe,
   hotkey: {
@@ -156,6 +161,7 @@ const getSupportedRecorderMimeType = () => {
   }
 
   const candidates = [
+    "audio/mpeg",
     "audio/ogg;codecs=opus",
     "audio/webm;codecs=opus",
     "audio/mp4"
@@ -190,7 +196,7 @@ const MessagePaneInput = ({
   const [sentAttachedFile, setSentAttachedFile] = useState([]);
   const [preview, setPreview] = useState([]);
   const [voicePrivacyEnabled, setVoicePrivacyEnabled] = useState(
-    activeVoiceConfig.enabled
+    activeVoiceConfig.defaultPrivacyEnabled
   );
   const [voiceState, setVoiceState] = useState({
     status: "idle",
@@ -199,6 +205,7 @@ const MessagePaneInput = ({
     autoStopped: false
   });
   const [voiceDraft, setVoiceDraft] = useState(null);
+  const [isSendingMessage, setIsSendingMessage] = useState(false);
 
   const mediaRecorderRef = useRef(null);
   const streamRef = useRef(null);
@@ -206,7 +213,9 @@ const MessagePaneInput = ({
   const recorderStartedAtRef = useRef(0);
   const recorderTimerRef = useRef(null);
   const voiceUrlRef = useRef(null);
+  const voiceDraftRef = useRef(null);
   const stopReasonRef = useRef("manual");
+  const transcriptionPromiseRef = useRef(null);
 
   useEffect(() => {
     const content = loadFromSessionStorage();
@@ -218,8 +227,8 @@ const MessagePaneInput = ({
   }, [sessionStorage.getItem("currentRoom")]);
 
   useEffect(() => {
-    setVoicePrivacyEnabled(activeVoiceConfig.enabled);
-  }, [activeVoiceConfig.enabled]);
+    setVoicePrivacyEnabled(activeVoiceConfig.defaultPrivacyEnabled);
+  }, [activeVoiceConfig.defaultPrivacyEnabled]);
 
   useEffect(
     () => () => {
@@ -238,6 +247,10 @@ const MessagePaneInput = ({
     []
   );
 
+  useEffect(() => {
+    voiceDraftRef.current = voiceDraft;
+  }, [voiceDraft]);
+
   const clearVoiceTimers = () => {
     if (recorderTimerRef.current) {
       window.clearInterval(recorderTimerRef.current);
@@ -246,6 +259,7 @@ const MessagePaneInput = ({
   };
 
   const clearVoiceDraft = useCallback(() => {
+    transcriptionPromiseRef.current = null;
     if (voiceUrlRef.current) {
       URL.revokeObjectURL(voiceUrlRef.current);
       voiceUrlRef.current = null;
@@ -324,6 +338,42 @@ const MessagePaneInput = ({
         return;
       }
 
+      const pendingTranscription = (async () => {
+        try {
+          const transcript = await activeVoiceConfig.transcribe(payload);
+          setVoiceDraft(prevState =>
+            prevState
+              ? {
+                  ...prevState,
+                  transcript: transcript || "",
+                  transcriptStatus: transcript ? "done" : "idle"
+                }
+              : prevState
+          );
+
+          return {
+            transcript: transcript || "",
+            transcriptStatus: transcript ? "done" : "idle"
+          };
+        } catch (error) {
+          setVoiceDraft(prevState =>
+            prevState
+              ? {
+                  ...prevState,
+                  transcriptStatus: "error"
+                }
+              : prevState
+          );
+
+          return {
+            transcript: "",
+            transcriptStatus: "error"
+          };
+        } finally {
+          transcriptionPromiseRef.current = null;
+        }
+      })();
+
       setVoiceDraft(prevState =>
         prevState
           ? {
@@ -332,28 +382,9 @@ const MessagePaneInput = ({
             }
           : prevState
       );
+      transcriptionPromiseRef.current = pendingTranscription;
 
-      try {
-        const transcript = await activeVoiceConfig.transcribe(payload);
-        setVoiceDraft(prevState =>
-          prevState
-            ? {
-                ...prevState,
-                transcript: transcript || "",
-                transcriptStatus: transcript ? "done" : "idle"
-              }
-            : prevState
-        );
-      } catch (error) {
-        setVoiceDraft(prevState =>
-          prevState
-            ? {
-                ...prevState,
-                transcriptStatus: "error"
-              }
-            : prevState
-        );
-      }
+      await pendingTranscription;
     },
     [activeVoiceConfig]
   );
@@ -628,39 +659,88 @@ const MessagePaneInput = ({
     voiceState.status
   ]);
 
-  const sendMessage = contentState => {
+  const sendMessage = async contentState => {
+    if (isSendingMessage) {
+      return false;
+    }
+
     const hasText =
       contentState.hasText() && contentState.getPlainText().trim().length > 0;
     const hasAttachedFiles = sentAttachedFile.length > 0;
     const hasVoiceMessage = Boolean(voiceDraft && voiceDraft.file);
 
     if (!hasText && !hasAttachedFiles && !hasVoiceMessage) {
-      return;
+      return false;
     }
 
-    const payload = {
-      attachments: sentAttachedFile,
-      voiceMessage: hasVoiceMessage ? voiceDraft : null
-    };
+    setIsSendingMessage(true);
 
-    if (hasVoiceMessage && onAttachFile) {
-      onAttachFile([voiceDraft.file], {
-        source: "voice-message",
-        voiceMessage: voiceDraft
+    if (hasVoiceMessage) {
+      setVoiceState(prevState => ({
+        ...prevState,
+        status: "uploading",
+        error: ""
+      }));
+    }
+
+    try {
+      let transcriptionResult = null;
+
+      if (hasVoiceMessage && transcriptionPromiseRef.current) {
+        transcriptionResult = await transcriptionPromiseRef.current;
+      }
+
+      let latestVoiceDraft = hasVoiceMessage ? voiceDraftRef.current : null;
+
+      if (latestVoiceDraft && transcriptionResult) {
+        latestVoiceDraft = {
+          ...latestVoiceDraft,
+          ...transcriptionResult
+        };
+      }
+
+      const payload = {
+        attachments: sentAttachedFile,
+        voiceMessage: latestVoiceDraft ? { ...latestVoiceDraft } : null
+      };
+
+      const shouldScroll =
+        typeof onSendMessage === "function"
+          ? await onSendMessage(convertToRaw(contentState), payload)
+          : false;
+
+      if (shouldScroll === false) {
+        throw new Error("Message could not be sent. Please try again.");
+      }
+
+      clearEditor();
+      setSentAttachedFile([]);
+      setPreview([]);
+      clearVoiceDraft();
+
+      setVoiceState({
+        status: "idle",
+        duration: 0,
+        error: "",
+        autoStopped: false
       });
-    }
 
-    onSendMessage && onSendMessage(convertToRaw(contentState), payload);
-    clearEditor();
-    setSentAttachedFile([]);
-    setPreview([]);
-    clearVoiceDraft();
-    setVoiceState({
-      status: "idle",
-      duration: 0,
-      error: "",
-      autoStopped: false
-    });
+      return true;
+    } catch (error) {
+      const message =
+        error?.message ||
+        "Voice message could not be uploaded. Please check the local backend and try again.";
+
+      setVoiceState(prevState => ({
+        ...prevState,
+        status: hasVoiceMessage ? "preview" : "error",
+        error: message
+      }));
+
+      return false;
+    } finally {
+      setIsSendingMessage(false);
+    }
   };
 
   const handleKeyCommand = (command, currentEditorState) => {
@@ -697,7 +777,8 @@ const MessagePaneInput = ({
     }
   };
 
-  const handleToggleVoicePrivacy = nextValue => {
+  const handleToggleVoicePrivacy = async nextValue => {
+    const previousValue = voicePrivacyEnabled;
     setVoicePrivacyEnabled(nextValue);
 
     if (!nextValue) {
@@ -712,6 +793,18 @@ const MessagePaneInput = ({
         error: "",
         autoStopped: false
       });
+    }
+
+    if (typeof activeVoiceConfig.onPrivacyChange === "function") {
+      try {
+        await activeVoiceConfig.onPrivacyChange(nextValue);
+      } catch (error) {
+        setVoicePrivacyEnabled(previousValue);
+        setVoiceError(
+          error?.message ||
+            "Voice privacy setting could not be updated. Please try again."
+        );
+      }
     }
   };
 
@@ -788,6 +881,7 @@ const MessagePaneInput = ({
     isRecording ||
     voiceState.status === "requesting" ||
     voiceState.status === "processing" ||
+    voiceState.status === "uploading" ||
     voiceState.status === "error" ||
     Boolean(voiceDraft);
 
@@ -812,7 +906,7 @@ const MessagePaneInput = ({
         </div>
 
         {showVoiceNotice ? (
-          <VoiceMessageCard>
+          <VoiceMessageCard role="status" aria-live="polite">
             {isRecording ? (
               <>
                 <VoiceStatusRow>
@@ -822,10 +916,33 @@ const MessagePaneInput = ({
                     Max {formatAudioTime(activeVoiceConfig.maxDurationSeconds)}
                   </span>
                 </VoiceStatusRow>
+
                 <VoiceHint>
-                  Recording from your microphone. Press `Ctrl+Shift+R` or tap
-                  the microphone again to stop.
+                  Recording from your microphone. Press Ctrl+Shift+R, tap the
+                  microphone again, or use the button below to stop.
                 </VoiceHint>
+
+                <VoiceActions>
+                  <PrimaryVoiceButton
+                    type="button"
+                    aria-label="Stop voice recording"
+                    title="Stop voice recording"
+                    onClick={() => stopVoiceRecording({ autoStopped: false })}
+                  >
+                    <FiSquare size={16} />
+                    Stop recording
+                  </PrimaryVoiceButton>
+
+                  <DangerVoiceButton
+                    type="button"
+                    aria-label="Cancel voice recording"
+                    title="Cancel voice recording"
+                    onClick={cancelVoiceRecording}
+                  >
+                    <FiMicOff size={16} />
+                    Cancel
+                  </DangerVoiceButton>
+                </VoiceActions>
               </>
             ) : null}
 
@@ -837,7 +954,11 @@ const MessagePaneInput = ({
               <VoiceHint>Preparing your voice message preview...</VoiceHint>
             ) : null}
 
-            {voiceState.status === "error" ? (
+            {voiceState.status === "uploading" ? (
+              <VoiceHint>Uploading and sending your voice message...</VoiceHint>
+            ) : null}
+
+            {voiceState.error ? (
               <VoiceError>{voiceState.error}</VoiceError>
             ) : null}
 
@@ -853,6 +974,7 @@ const MessagePaneInput = ({
                 <VoiceActions>
                   <SecondaryButton
                     type="button"
+                    disabled={isSendingMessage}
                     onClick={() => {
                       clearVoiceDraft();
                       setVoiceState({
@@ -869,6 +991,7 @@ const MessagePaneInput = ({
                   {voicePrivacyEnabled ? (
                     <SecondaryButton
                       type="button"
+                      disabled={isSendingMessage}
                       onClick={async () => {
                         clearVoiceDraft();
                         setVoiceState({
@@ -896,6 +1019,7 @@ const MessagePaneInput = ({
           editorState={editorState}
           emojiSelect={<EmojiSelect />}
           isRecording={isRecording}
+          isSending={isSendingMessage}
           onCancelVoiceRecording={cancelVoiceRecording}
           onStartVoiceRecording={startVoiceRecording}
           onStopVoiceRecording={stopVoiceRecording}
@@ -928,8 +1052,10 @@ MessagePaneInput.propTypes = {
       key: PropTypes.string,
       shiftKey: PropTypes.bool
     }),
+    defaultPrivacyEnabled: PropTypes.bool,
     maxDurationSeconds: PropTypes.number,
     maxFileSizeMb: PropTypes.number,
+    onPrivacyChange: PropTypes.func,
     transcribe: PropTypes.func,
     transcriptionEnabled: PropTypes.bool
   })
@@ -956,10 +1082,10 @@ const Wrapper = styled.div`
 const InputWrapper = styled.section`
   border: 1px solid #b0afb0;
   border-radius: 12px;
-  padding: 14px 16px;
+  padding: 10px 14px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
   background: #fff;
 
   .RichEditor-root {
@@ -968,16 +1094,16 @@ const InputWrapper = styled.section`
   }
 
   .RichEditor-editor {
-    margin-top: 12px;
+    margin-top: 8px;
   }
 
   .RichEditor-editor .public-DraftEditor-content {
-    min-height: 72px;
+    min-height: 56px;
   }
 
   @media (max-width: 640px) {
-    padding: 12px;
-    gap: 10px;
+    padding: 8px 10px;
+    gap: 8px;
   }
 `;
 
@@ -1103,6 +1229,64 @@ const VoiceActions = styled.div`
   align-items: center;
 `;
 
+const PrimaryVoiceButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  border-radius: 999px;
+  padding: 8px 14px;
+  background: #19794f;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 700;
+  line-height: 1;
+
+  svg {
+    display: block;
+    flex-shrink: 0;
+  }
+
+  &:hover {
+    background: #14633f;
+  }
+
+  &:focus-visible {
+    outline: 3px solid rgba(25, 121, 79, 0.25);
+    outline-offset: 2px;
+  }
+`;
+
+const DangerVoiceButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid #f0c8c8;
+  border-radius: 999px;
+  padding: 8px 14px;
+  background: #fff;
+  color: #b42318;
+  cursor: pointer;
+  font-weight: 700;
+  line-height: 1;
+
+  svg {
+    display: block;
+    flex-shrink: 0;
+  }
+
+  &:hover {
+    background: #fff5f5;
+  }
+
+  &:focus-visible {
+    outline: 3px solid rgba(180, 35, 24, 0.22);
+    outline-offset: 2px;
+  }
+`;
+
 const SecondaryButton = styled.button`
   display: inline-flex;
   align-items: center;
@@ -1114,4 +1298,8 @@ const SecondaryButton = styled.button`
   padding: 8px 12px;
   cursor: pointer;
   font-weight: 600;
+  &:disabled {
+    opacity: 0.58;
+    cursor: not-allowed;
+  }
 `;

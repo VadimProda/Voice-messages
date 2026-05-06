@@ -19,6 +19,26 @@
       "verified": true,
       "verificationCode": null,
       "token": "token-96fde3f0-8fd5-494c-85d6-f847c0b3c708"
+    },
+    {
+      "id": "7fb66258-ec2d-4050-8fd0-14d349c5b4e8",
+      "email": "teamsvadim116@gmail.com",
+      "password": "123321asdF",
+      "first_name": "Вадим",
+      "last_name": "Teams ",
+      "verified": true,
+      "verificationCode": null,
+      "token": "token-981f7e83-8df1-4e2e-8652-2933a98d3c64"
+    },
+    {
+      "id": "dc762122-8493-4942-b278-e0df2332eb10",
+      "email": "prodashchuk1@gmail.com",
+      "password": "123321asdF",
+      "first_name": "Vadim",
+      "last_name": "",
+      "verified": true,
+      "verificationCode": null,
+      "token": "token-d3666c84-f8f0-49d1-9721-f824cdd6b219"
     }
   ],
   "organizations": [
@@ -63,6 +83,56 @@
           "user_id": "member-2ff8f258f2"
         }
       ]
+    },
+    {
+      "id": "org-97097c41373d",
+      "name": "VadimTest",
+      "workspace_url": "org-97097c41373d.localhost",
+      "creator_email": "teamsvadim116@gmail.com",
+      "members": [
+        {
+          "_id": "member-d80b315f1579",
+          "id": "member-d80b315f1579",
+          "email": "teamsvadim116@gmail.com",
+          "user_id": "7fb66258-ec2d-4050-8fd0-14d349c5b4e8",
+          "display_name": "Вадим Teams"
+        }
+      ],
+      "memberEmails": [
+        "teamsvadim116@gmail.com"
+      ],
+      "installedPlugins": [
+        {
+          "plugin_id": "plugin-messaging-local",
+          "user_id": "member-d80b315f1579",
+          "installed_at": "2026-05-06T09:42:01.995Z"
+        }
+      ]
+    },
+    {
+      "id": "org-c855e97d3efd",
+      "name": "ZZZ",
+      "workspace_url": "org-c855e97d3efd.localhost",
+      "creator_email": "prodashchuk1@gmail.com",
+      "members": [
+        {
+          "_id": "member-39c59dcb6db1",
+          "id": "member-39c59dcb6db1",
+          "email": "prodashchuk1@gmail.com",
+          "user_id": "dc762122-8493-4942-b278-e0df2332eb10",
+          "display_name": "Vadim"
+        }
+      ],
+      "memberEmails": [
+        "prodashchuk1@gmail.com"
+      ],
+      "installedPlugins": [
+        {
+          "plugin_id": "plugin-messaging-local",
+          "user_id": "member-39c59dcb6db1",
+          "installed_at": "2026-05-06T11:02:08.577Z"
+        }
+      ]
     }
   ],
   "installs": [
@@ -79,6 +149,1362 @@
       "organization_id": "org-6b1e23cf43c5",
       "user_id": "member-2ff8f258f2",
       "created_at": "2026-05-02T16:19:44.177Z"
+    },
+    {
+      "id": "f2903dbc-4aca-4eaf-a9ba-58e58f90c95c",
+      "type": "chat",
+      "organization_id": "org-97097c41373d",
+      "user_id": "member-d80b315f1579",
+      "created_at": "2026-05-06T09:42:02.001Z"
+    },
+    {
+      "id": "6f61c22e-f58e-466c-948d-9e3df3e114c2",
+      "type": "chat",
+      "organization_id": "org-c855e97d3efd",
+      "user_id": "member-39c59dcb6db1",
+      "created_at": "2026-05-06T11:02:08.583Z"
     }
-  ]
+  ],
+  "channels": [
+    {
+      "id": "channel-871fd8eb023a",
+      "workspace_id": "org-55a191351209",
+      "name": "all-dms",
+      "display_name": "all-dms",
+      "type": "public",
+      "created_by": "codex.qa.1777717885962@example.com",
+      "created_at": "2026-05-06T09:38:19.143Z"
+    },
+    {
+      "id": "channel-a33f24621286",
+      "workspace_id": "org-6b1e23cf43c5",
+      "name": "all-dms",
+      "display_name": "all-dms",
+      "type": "public",
+      "created_by": "vadosprodashik@gmail.com",
+      "created_at": "2026-05-06T09:38:19.143Z"
+    },
+    {
+      "id": "channel-196408ca3f26",
+      "workspace_id": "org-97097c41373d",
+      "name": "testproject",
+      "display_name": "testproject",
+      "type": "public",
+      "created_by": "7fb66258-ec2d-4050-8fd0-14d349c5b4e8",
+      "created_at": "2026-05-06T09:42:01.974Z"
+    },
+    {
+      "id": "channel-34c550a7abce",
+      "workspace_id": "org-c855e97d3efd",
+      "name": "zzz",
+      "display_name": "zzz",
+      "type": "public",
+      "created_by": "dc762122-8493-4942-b278-e0df2332eb10",
+      "created_at": "2026-05-06T11:02:08.556Z"
+    }
+  ],
+  "messages": [
+    {
+      "_id": "message-05d559773bdb4b5f",
+      "message_id": 1778060556962,
+      "channel_id": "channel-196408ca3f26",
+      "workspace_id": "org-97097c41373d",
+      "sender_id": "7fb66258-ec2d-4050-8fd0-14d349c5b4e8",
+      "sender": {
+        "sender_name": "Вадим Teams",
+        "sender_image_url": ""
+      },
+      "timestamp": 1778060556962,
+      "emojis": [],
+      "files": [],
+      "richUiData": {
+        "blocks": [
+          {
+            "key": "6eg7r",
+            "text": "Всем привет!",
+            "type": "unstyled",
+            "depth": 0,
+            "inlineStyleRanges": [],
+            "entityRanges": [],
+            "data": {}
+          }
+        ],
+        "entityMap": {}
+      },
+      "voiceMessage": null
+    },
+    {
+      "_id": "message-b4398a0cb5fb4b63",
+      "message_id": 1778060567186,
+      "channel_id": "channel-196408ca3f26",
+      "workspace_id": "org-97097c41373d",
+      "sender_id": "7fb66258-ec2d-4050-8fd0-14d349c5b4e8",
+      "sender": {
+        "sender_name": "Вадим Teams",
+        "sender_image_url": ""
+      },
+      "timestamp": 1778060567186,
+      "emojis": [],
+      "files": [],
+      "richUiData": {
+        "blocks": [
+          {
+            "key": "6eg7r",
+            "text": "Как ваши дела?",
+            "type": "unstyled",
+            "depth": 0,
+            "inlineStyleRanges": [],
+            "entityRanges": [],
+            "data": {}
+          }
+        ],
+        "entityMap": {}
+      },
+      "voiceMessage": null
+    },
+    {
+      "_id": "message-3d30fb9653ef41a3",
+      "message_id": 1778060572123,
+      "channel_id": "channel-196408ca3f26",
+      "workspace_id": "org-97097c41373d",
+      "sender_id": "7fb66258-ec2d-4050-8fd0-14d349c5b4e8",
+      "sender": {
+        "sender_name": "Вадим Teams",
+        "sender_image_url": ""
+      },
+      "timestamp": 1778060572123,
+      "emojis": [],
+      "files": [],
+      "richUiData": {
+        "blocks": [
+          {
+            "key": "6eg7r",
+            "text": "Привет",
+            "type": "unstyled",
+            "depth": 0,
+            "inlineStyleRanges": [],
+            "entityRanges": [],
+            "data": {}
+          }
+        ],
+        "entityMap": {}
+      },
+      "voiceMessage": null
+    },
+    {
+      "_id": "message-89c397f5fef34a87",
+      "message_id": 1778060573787,
+      "channel_id": "channel-196408ca3f26",
+      "workspace_id": "org-97097c41373d",
+      "sender_id": "7fb66258-ec2d-4050-8fd0-14d349c5b4e8",
+      "sender": {
+        "sender_name": "Вадим Teams",
+        "sender_image_url": ""
+      },
+      "timestamp": 1778060573787,
+      "emojis": [],
+      "files": [],
+      "richUiData": {
+        "blocks": [
+          {
+            "key": "6eg7r",
+            "text": "Всем",
+            "type": "unstyled",
+            "depth": 0,
+            "inlineStyleRanges": [],
+            "entityRanges": [],
+            "data": {}
+          }
+        ],
+        "entityMap": {}
+      },
+      "voiceMessage": null
+    },
+    {
+      "_id": "message-463596e8f61d4542",
+      "message_id": 1778060575787,
+      "channel_id": "channel-196408ca3f26",
+      "workspace_id": "org-97097c41373d",
+      "sender_id": "7fb66258-ec2d-4050-8fd0-14d349c5b4e8",
+      "sender": {
+        "sender_name": "Вадим Teams",
+        "sender_image_url": ""
+      },
+      "timestamp": 1778060575787,
+      "emojis": [],
+      "files": [],
+      "richUiData": {
+        "blocks": [
+          {
+            "key": "6eg7r",
+            "text": "Как ваши",
+            "type": "unstyled",
+            "depth": 0,
+            "inlineStyleRanges": [],
+            "entityRanges": [],
+            "data": {}
+          }
+        ],
+        "entityMap": {}
+      },
+      "voiceMessage": null
+    },
+    {
+      "_id": "message-8aaadcbf849b4afb",
+      "message_id": 1778060577605,
+      "channel_id": "channel-196408ca3f26",
+      "workspace_id": "org-97097c41373d",
+      "sender_id": "7fb66258-ec2d-4050-8fd0-14d349c5b4e8",
+      "sender": {
+        "sender_name": "Вадим Teams",
+        "sender_image_url": ""
+      },
+      "timestamp": 1778060577605,
+      "emojis": [],
+      "files": [],
+      "richUiData": {
+        "blocks": [
+          {
+            "key": "6eg7r",
+            "text": "Дела",
+            "type": "unstyled",
+            "depth": 0,
+            "inlineStyleRanges": [],
+            "entityRanges": [],
+            "data": {}
+          }
+        ],
+        "entityMap": {}
+      },
+      "voiceMessage": null
+    },
+    {
+      "_id": "message-d74e7c559e5847a7",
+      "message_id": 1778061297433,
+      "channel_id": "channel-196408ca3f26",
+      "workspace_id": "org-97097c41373d",
+      "sender_id": "7fb66258-ec2d-4050-8fd0-14d349c5b4e8",
+      "sender": {
+        "sender_name": "Вадим Teams",
+        "sender_image_url": ""
+      },
+      "timestamp": 1778061297433,
+      "emojis": [],
+      "files": [],
+      "richUiData": {
+        "blocks": [
+          {
+            "key": "6eg7r",
+            "text": "",
+            "type": "unstyled",
+            "depth": 0,
+            "inlineStyleRanges": [],
+            "entityRanges": [],
+            "data": {}
+          }
+        ],
+        "entityMap": {}
+      },
+      "voiceMessage": {
+        "duration": 13.440303,
+        "fileName": "voice-message-1778061294536.webm",
+        "listened": true,
+        "mimeType": "audio/webm",
+        "sizeLabel": "0.10 MB",
+        "transcript": "Local transcript placeholder for voice-message-1778061294536.webm",
+        "transcriptStatus": "done",
+        "waveform": [
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          56,
+          100,
+          51,
+          12,
+          12,
+          40,
+          70,
+          46,
+          35,
+          37,
+          51,
+          19,
+          39,
+          64,
+          12,
+          12,
+          43,
+          20,
+          12,
+          29,
+          23,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12
+        ],
+        "id": "voice-957f6c0aa05f",
+        "type": "voice",
+        "fileId": "voice-957f6c0aa05f",
+        "storedFileName": "voice-957f6c0aa05f.webm",
+        "url": "http://localhost:5050/uploads/voice-messages/voice-957f6c0aa05f.webm",
+        "downloadUrl": "http://localhost:5050/uploads/voice-messages/voice-957f6c0aa05f.webm",
+        "size": 109646,
+        "uploadedBy": "7fb66258-ec2d-4050-8fd0-14d349c5b4e8",
+        "uploadedByEmail": "teamsvadim116@gmail.com",
+        "created_at": "2026-05-06T09:54:57.424Z",
+        "listenedBy": [
+          "7fb66258-ec2d-4050-8fd0-14d349c5b4e8"
+        ]
+      }
+    },
+    {
+      "_id": "message-8315e8625e3143f4",
+      "message_id": 1778061378289,
+      "channel_id": "channel-196408ca3f26",
+      "workspace_id": "org-97097c41373d",
+      "sender_id": "7fb66258-ec2d-4050-8fd0-14d349c5b4e8",
+      "sender": {
+        "sender_name": "Вадим Teams",
+        "sender_image_url": ""
+      },
+      "timestamp": 1778061378289,
+      "emojis": [],
+      "files": [],
+      "richUiData": {
+        "blocks": [
+          {
+            "key": "6eg7r",
+            "text": "",
+            "type": "unstyled",
+            "depth": 0,
+            "inlineStyleRanges": [],
+            "entityRanges": [],
+            "data": {}
+          }
+        ],
+        "entityMap": {}
+      },
+      "voiceMessage": {
+        "duration": 18.180431,
+        "fileName": "voice-message-1778061373294.webm",
+        "listened": true,
+        "mimeType": "audio/webm",
+        "sizeLabel": "0.14 MB",
+        "transcript": "Local transcript placeholder for voice-message-1778061373294.webm",
+        "transcriptStatus": "done",
+        "waveform": [
+          12,
+          12,
+          12,
+          60,
+          55,
+          42,
+          37,
+          42,
+          42,
+          12,
+          18,
+          76,
+          73,
+          49,
+          52,
+          61,
+          36,
+          12,
+          12,
+          12,
+          40,
+          83,
+          74,
+          52,
+          70,
+          24,
+          12,
+          32,
+          100,
+          57,
+          34,
+          35,
+          50,
+          12,
+          12,
+          12
+        ],
+        "id": "voice-eb754fa7382c",
+        "type": "voice",
+        "fileId": "voice-eb754fa7382c",
+        "storedFileName": "voice-eb754fa7382c.webm",
+        "url": "http://localhost:5050/uploads/voice-messages/voice-eb754fa7382c.webm",
+        "downloadUrl": "http://localhost:5050/uploads/voice-messages/voice-eb754fa7382c.webm",
+        "size": 148040,
+        "uploadedBy": "7fb66258-ec2d-4050-8fd0-14d349c5b4e8",
+        "uploadedByEmail": "teamsvadim116@gmail.com",
+        "created_at": "2026-05-06T09:56:18.278Z",
+        "listenedBy": [
+          "7fb66258-ec2d-4050-8fd0-14d349c5b4e8"
+        ]
+      }
+    },
+    {
+      "_id": "message-07879148c22e47da",
+      "message_id": 1778062522134,
+      "channel_id": "channel-196408ca3f26",
+      "workspace_id": "org-97097c41373d",
+      "sender_id": "7fb66258-ec2d-4050-8fd0-14d349c5b4e8",
+      "sender": {
+        "sender_name": "Вадим Teams",
+        "sender_image_url": ""
+      },
+      "timestamp": 1778062522134,
+      "emojis": [],
+      "files": [],
+      "richUiData": {
+        "blocks": [
+          {
+            "key": "6eg7r",
+            "text": "",
+            "type": "unstyled",
+            "depth": 0,
+            "inlineStyleRanges": [],
+            "entityRanges": [],
+            "data": {}
+          }
+        ],
+        "entityMap": {}
+      },
+      "voiceMessage": {
+        "duration": 2.100052,
+        "fileName": "voice-message-1778062519830.webm",
+        "listened": true,
+        "mimeType": "audio/webm",
+        "sizeLabel": "0.02 MB",
+        "transcript": "Local transcript placeholder for voice-message-1778062519830.webm",
+        "transcriptStatus": "done",
+        "waveform": [
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          14,
+          30,
+          88,
+          51,
+          12,
+          72,
+          100,
+          95,
+          19,
+          23,
+          37,
+          32,
+          12,
+          27,
+          34,
+          43,
+          30,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12
+        ],
+        "id": "voice-bb23f1fac63c",
+        "type": "voice",
+        "fileId": "voice-bb23f1fac63c",
+        "storedFileName": "voice-bb23f1fac63c.webm",
+        "url": "http://localhost:5050/uploads/voice-messages/voice-bb23f1fac63c.webm",
+        "downloadUrl": "http://localhost:5050/uploads/voice-messages/voice-bb23f1fac63c.webm",
+        "size": 17792,
+        "uploadedBy": "7fb66258-ec2d-4050-8fd0-14d349c5b4e8",
+        "uploadedByEmail": "teamsvadim116@gmail.com",
+        "created_at": "2026-05-06T10:15:22.124Z",
+        "listenedBy": [
+          "7fb66258-ec2d-4050-8fd0-14d349c5b4e8"
+        ]
+      }
+    },
+    {
+      "_id": "message-fd5c0b1b9e954fd8",
+      "message_id": 1778063196476,
+      "channel_id": "channel-196408ca3f26",
+      "workspace_id": "org-97097c41373d",
+      "sender_id": "7fb66258-ec2d-4050-8fd0-14d349c5b4e8",
+      "sender": {
+        "sender_name": "Вадим Teams",
+        "sender_image_url": ""
+      },
+      "timestamp": 1778063196476,
+      "emojis": [],
+      "files": [],
+      "richUiData": {
+        "blocks": [
+          {
+            "key": "dsa4i",
+            "text": "",
+            "type": "unstyled",
+            "depth": 0,
+            "inlineStyleRanges": [],
+            "entityRanges": [],
+            "data": {}
+          }
+        ],
+        "entityMap": {}
+      },
+      "voiceMessage": {
+        "duration": 3.420072,
+        "fileName": "voice-message-1778063194549.webm",
+        "listened": true,
+        "mimeType": "audio/webm",
+        "sizeLabel": "0.03 MB",
+        "transcript": "Local transcript placeholder for voice-message-1778063194549.webm",
+        "transcriptStatus": "done",
+        "waveform": [
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          16,
+          77,
+          56,
+          68,
+          100,
+          96,
+          42,
+          32,
+          25,
+          31,
+          38,
+          32,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12
+        ],
+        "id": "voice-c271aed48530",
+        "type": "voice",
+        "fileId": "voice-c271aed48530",
+        "storedFileName": "voice-c271aed48530.webm",
+        "url": "http://localhost:5050/uploads/voice-messages/voice-c271aed48530.webm",
+        "downloadUrl": "http://localhost:5050/uploads/voice-messages/voice-c271aed48530.webm",
+        "size": 28484,
+        "uploadedBy": "7fb66258-ec2d-4050-8fd0-14d349c5b4e8",
+        "uploadedByEmail": "teamsvadim116@gmail.com",
+        "created_at": "2026-05-06T10:26:36.467Z",
+        "listenedBy": [
+          "7fb66258-ec2d-4050-8fd0-14d349c5b4e8"
+        ]
+      }
+    },
+    {
+      "_id": "message-9f4cc31142124242",
+      "message_id": 1778063843014,
+      "channel_id": "channel-196408ca3f26",
+      "workspace_id": "org-97097c41373d",
+      "sender_id": "7fb66258-ec2d-4050-8fd0-14d349c5b4e8",
+      "sender": {
+        "sender_name": "Вадим Teams",
+        "sender_image_url": ""
+      },
+      "timestamp": 1778063843014,
+      "emojis": [],
+      "files": [],
+      "richUiData": {
+        "blocks": [
+          {
+            "key": "dsa4i",
+            "text": "",
+            "type": "unstyled",
+            "depth": 0,
+            "inlineStyleRanges": [],
+            "entityRanges": [],
+            "data": {}
+          }
+        ],
+        "entityMap": {}
+      },
+      "voiceMessage": {
+        "duration": 11.220258,
+        "fileName": "voice-message-1778063840185.webm",
+        "listened": true,
+        "mimeType": "audio/webm",
+        "sizeLabel": "0.09 MB",
+        "transcript": "Local transcript placeholder for voice-message-1778063840185.webm",
+        "transcriptStatus": "done",
+        "waveform": [
+          12,
+          12,
+          17,
+          25,
+          43,
+          41,
+          12,
+          76,
+          50,
+          100,
+          12,
+          64,
+          53,
+          47,
+          55,
+          38,
+          50,
+          30,
+          66,
+          34,
+          26,
+          35,
+          26,
+          61,
+          29,
+          17,
+          12,
+          12,
+          67,
+          86,
+          44,
+          82,
+          37,
+          54,
+          84,
+          57
+        ],
+        "id": "voice-bc5ab3923ad0",
+        "type": "voice",
+        "fileId": "voice-bc5ab3923ad0",
+        "storedFileName": "voice-bc5ab3923ad0.webm",
+        "url": "http://localhost:5050/uploads/voice-messages/voice-bc5ab3923ad0.webm",
+        "downloadUrl": "http://localhost:5050/uploads/voice-messages/voice-bc5ab3923ad0.webm",
+        "size": 91664,
+        "uploadedBy": "7fb66258-ec2d-4050-8fd0-14d349c5b4e8",
+        "uploadedByEmail": "teamsvadim116@gmail.com",
+        "created_at": "2026-05-06T10:37:23.005Z",
+        "listenedBy": [
+          "7fb66258-ec2d-4050-8fd0-14d349c5b4e8"
+        ]
+      }
+    },
+    {
+      "_id": "message-de5a1ff5e10e4fa5",
+      "message_id": 1778065396745,
+      "channel_id": "channel-34c550a7abce",
+      "workspace_id": "org-c855e97d3efd",
+      "sender_id": "dc762122-8493-4942-b278-e0df2332eb10",
+      "sender": {
+        "sender_name": "Vadim",
+        "sender_image_url": ""
+      },
+      "timestamp": 1778065396745,
+      "emojis": [],
+      "files": [],
+      "richUiData": {
+        "blocks": [
+          {
+            "key": "bhc18",
+            "text": "",
+            "type": "unstyled",
+            "depth": 0,
+            "inlineStyleRanges": [],
+            "entityRanges": [],
+            "data": {}
+          }
+        ],
+        "entityMap": {}
+      },
+      "voiceMessage": {
+        "duration": 4.200092,
+        "fileName": "voice-message-1778065394075.webm",
+        "listened": true,
+        "mimeType": "audio/webm",
+        "sizeLabel": "34 KB",
+        "transcript": "Local transcript placeholder for voice-message-1778065394075.webm",
+        "transcriptStatus": "done",
+        "waveform": [
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          26,
+          43,
+          100,
+          17,
+          12,
+          24,
+          35,
+          21,
+          17,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12
+        ],
+        "id": "voice-2492a6ee4801",
+        "type": "voice",
+        "fileId": "voice-2492a6ee4801",
+        "storedFileName": "voice-2492a6ee4801.webm",
+        "url": "http://localhost:5050/uploads/voice-messages/voice-2492a6ee4801.webm",
+        "downloadUrl": "http://localhost:5050/uploads/voice-messages/voice-2492a6ee4801.webm",
+        "size": 34802,
+        "uploadedBy": "dc762122-8493-4942-b278-e0df2332eb10",
+        "uploadedByEmail": "prodashchuk1@gmail.com",
+        "created_at": "2026-05-06T11:03:16.709Z",
+        "listenedBy": [
+          "dc762122-8493-4942-b278-e0df2332eb10"
+        ]
+      }
+    },
+    {
+      "_id": "message-fd3edc062947411c",
+      "message_id": 1778065419288,
+      "channel_id": "channel-34c550a7abce",
+      "workspace_id": "org-c855e97d3efd",
+      "sender_id": "dc762122-8493-4942-b278-e0df2332eb10",
+      "sender": {
+        "sender_name": "Vadim",
+        "sender_image_url": ""
+      },
+      "timestamp": 1778065419288,
+      "emojis": [],
+      "files": [],
+      "richUiData": {
+        "blocks": [
+          {
+            "key": "bhc18",
+            "text": "Всем привет!",
+            "type": "unstyled",
+            "depth": 0,
+            "inlineStyleRanges": [],
+            "entityRanges": [],
+            "data": {}
+          }
+        ],
+        "entityMap": {}
+      },
+      "voiceMessage": null
+    },
+    {
+      "_id": "message-12cff6c47ec244f8",
+      "message_id": 1778065424844,
+      "channel_id": "channel-34c550a7abce",
+      "workspace_id": "org-c855e97d3efd",
+      "sender_id": "dc762122-8493-4942-b278-e0df2332eb10",
+      "sender": {
+        "sender_name": "Vadim",
+        "sender_image_url": ""
+      },
+      "timestamp": 1778065424844,
+      "emojis": [],
+      "files": [],
+      "richUiData": {
+        "blocks": [
+          {
+            "key": "bhc18",
+            "text": "Как ваши дела?",
+            "type": "unstyled",
+            "depth": 0,
+            "inlineStyleRanges": [],
+            "entityRanges": [],
+            "data": {}
+          }
+        ],
+        "entityMap": {}
+      },
+      "voiceMessage": null
+    },
+    {
+      "_id": "message-4a396f4d44ea4f0f",
+      "message_id": 1778065430029,
+      "channel_id": "channel-34c550a7abce",
+      "workspace_id": "org-c855e97d3efd",
+      "sender_id": "dc762122-8493-4942-b278-e0df2332eb10",
+      "sender": {
+        "sender_name": "Vadim",
+        "sender_image_url": ""
+      },
+      "timestamp": 1778065430029,
+      "emojis": [],
+      "files": [],
+      "richUiData": {
+        "blocks": [
+          {
+            "key": "bhc18",
+            "text": "Все ли впорядке?",
+            "type": "unstyled",
+            "depth": 0,
+            "inlineStyleRanges": [],
+            "entityRanges": [],
+            "data": {}
+          }
+        ],
+        "entityMap": {}
+      },
+      "voiceMessage": null
+    },
+    {
+      "_id": "message-968229bb47694328",
+      "message_id": 1778065860228,
+      "channel_id": "channel-34c550a7abce",
+      "workspace_id": "org-c855e97d3efd",
+      "sender_id": "dc762122-8493-4942-b278-e0df2332eb10",
+      "sender": {
+        "sender_name": "Vadim",
+        "sender_image_url": ""
+      },
+      "timestamp": 1778065860228,
+      "emojis": [],
+      "files": [],
+      "richUiData": {
+        "blocks": [
+          {
+            "key": "b2j89",
+            "text": "",
+            "type": "unstyled",
+            "depth": 0,
+            "inlineStyleRanges": [],
+            "entityRanges": [],
+            "data": {}
+          }
+        ],
+        "entityMap": {}
+      },
+      "voiceMessage": {
+        "duration": 2.34005,
+        "fileName": "voice-message-1778065858599.webm",
+        "listened": true,
+        "mimeType": "audio/webm",
+        "sizeLabel": "19 KB",
+        "transcript": "Local transcript placeholder for voice-message-1778065858599.webm",
+        "transcriptStatus": "done",
+        "waveform": [
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          22,
+          37,
+          44,
+          100,
+          60,
+          28,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          34,
+          61,
+          35,
+          27,
+          36,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12
+        ],
+        "id": "voice-6ce21a62809a",
+        "type": "voice",
+        "fileId": "voice-6ce21a62809a",
+        "storedFileName": "voice-6ce21a62809a.webm",
+        "url": "http://localhost:5050/uploads/voice-messages/voice-6ce21a62809a.webm",
+        "downloadUrl": "http://localhost:5050/uploads/voice-messages/voice-6ce21a62809a.webm",
+        "size": 19736,
+        "uploadedBy": "dc762122-8493-4942-b278-e0df2332eb10",
+        "uploadedByEmail": "prodashchuk1@gmail.com",
+        "created_at": "2026-05-06T11:11:00.218Z",
+        "listenedBy": [
+          "dc762122-8493-4942-b278-e0df2332eb10"
+        ]
+      }
+    }
+  ],
+  "files": [
+    {
+      "id": "voice-957f6c0aa05f",
+      "type": "voice",
+      "fileId": "voice-957f6c0aa05f",
+      "fileName": "voice-message-1778061294536.webm",
+      "storedFileName": "voice-957f6c0aa05f.webm",
+      "url": "http://localhost:5050/uploads/voice-messages/voice-957f6c0aa05f.webm",
+      "downloadUrl": "http://localhost:5050/uploads/voice-messages/voice-957f6c0aa05f.webm",
+      "mimeType": "audio/webm",
+      "size": 109646,
+      "sizeLabel": "0.10 MB",
+      "duration": 13.440303,
+      "waveform": [
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        56,
+        100,
+        51,
+        12,
+        12,
+        40,
+        70,
+        46,
+        35,
+        37,
+        51,
+        19,
+        39,
+        64,
+        12,
+        12,
+        43,
+        20,
+        12,
+        29,
+        23,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12
+      ],
+      "uploadedBy": "7fb66258-ec2d-4050-8fd0-14d349c5b4e8",
+      "uploadedByEmail": "teamsvadim116@gmail.com",
+      "created_at": "2026-05-06T09:54:57.424Z"
+    },
+    {
+      "id": "voice-eb754fa7382c",
+      "type": "voice",
+      "fileId": "voice-eb754fa7382c",
+      "fileName": "voice-message-1778061373294.webm",
+      "storedFileName": "voice-eb754fa7382c.webm",
+      "url": "http://localhost:5050/uploads/voice-messages/voice-eb754fa7382c.webm",
+      "downloadUrl": "http://localhost:5050/uploads/voice-messages/voice-eb754fa7382c.webm",
+      "mimeType": "audio/webm",
+      "size": 148040,
+      "sizeLabel": "0.14 MB",
+      "duration": 18.180431,
+      "waveform": [
+        12,
+        12,
+        12,
+        60,
+        55,
+        42,
+        37,
+        42,
+        42,
+        12,
+        18,
+        76,
+        73,
+        49,
+        52,
+        61,
+        36,
+        12,
+        12,
+        12,
+        40,
+        83,
+        74,
+        52,
+        70,
+        24,
+        12,
+        32,
+        100,
+        57,
+        34,
+        35,
+        50,
+        12,
+        12,
+        12
+      ],
+      "uploadedBy": "7fb66258-ec2d-4050-8fd0-14d349c5b4e8",
+      "uploadedByEmail": "teamsvadim116@gmail.com",
+      "created_at": "2026-05-06T09:56:18.278Z"
+    },
+    {
+      "id": "voice-bb23f1fac63c",
+      "type": "voice",
+      "fileId": "voice-bb23f1fac63c",
+      "fileName": "voice-message-1778062519830.webm",
+      "storedFileName": "voice-bb23f1fac63c.webm",
+      "url": "http://localhost:5050/uploads/voice-messages/voice-bb23f1fac63c.webm",
+      "downloadUrl": "http://localhost:5050/uploads/voice-messages/voice-bb23f1fac63c.webm",
+      "mimeType": "audio/webm",
+      "size": 17792,
+      "sizeLabel": "0.02 MB",
+      "duration": 2.100052,
+      "waveform": [
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        14,
+        30,
+        88,
+        51,
+        12,
+        72,
+        100,
+        95,
+        19,
+        23,
+        37,
+        32,
+        12,
+        27,
+        34,
+        43,
+        30,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12
+      ],
+      "uploadedBy": "7fb66258-ec2d-4050-8fd0-14d349c5b4e8",
+      "uploadedByEmail": "teamsvadim116@gmail.com",
+      "created_at": "2026-05-06T10:15:22.124Z"
+    },
+    {
+      "id": "voice-c271aed48530",
+      "type": "voice",
+      "fileId": "voice-c271aed48530",
+      "fileName": "voice-message-1778063194549.webm",
+      "storedFileName": "voice-c271aed48530.webm",
+      "url": "http://localhost:5050/uploads/voice-messages/voice-c271aed48530.webm",
+      "downloadUrl": "http://localhost:5050/uploads/voice-messages/voice-c271aed48530.webm",
+      "mimeType": "audio/webm",
+      "size": 28484,
+      "sizeLabel": "0.03 MB",
+      "duration": 3.420072,
+      "waveform": [
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        16,
+        77,
+        56,
+        68,
+        100,
+        96,
+        42,
+        32,
+        25,
+        31,
+        38,
+        32,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12
+      ],
+      "uploadedBy": "7fb66258-ec2d-4050-8fd0-14d349c5b4e8",
+      "uploadedByEmail": "teamsvadim116@gmail.com",
+      "created_at": "2026-05-06T10:26:36.467Z"
+    },
+    {
+      "id": "voice-bc5ab3923ad0",
+      "type": "voice",
+      "fileId": "voice-bc5ab3923ad0",
+      "fileName": "voice-message-1778063840185.webm",
+      "storedFileName": "voice-bc5ab3923ad0.webm",
+      "url": "http://localhost:5050/uploads/voice-messages/voice-bc5ab3923ad0.webm",
+      "downloadUrl": "http://localhost:5050/uploads/voice-messages/voice-bc5ab3923ad0.webm",
+      "mimeType": "audio/webm",
+      "size": 91664,
+      "sizeLabel": "0.09 MB",
+      "duration": 11.220258,
+      "waveform": [
+        12,
+        12,
+        17,
+        25,
+        43,
+        41,
+        12,
+        76,
+        50,
+        100,
+        12,
+        64,
+        53,
+        47,
+        55,
+        38,
+        50,
+        30,
+        66,
+        34,
+        26,
+        35,
+        26,
+        61,
+        29,
+        17,
+        12,
+        12,
+        67,
+        86,
+        44,
+        82,
+        37,
+        54,
+        84,
+        57
+      ],
+      "uploadedBy": "7fb66258-ec2d-4050-8fd0-14d349c5b4e8",
+      "uploadedByEmail": "teamsvadim116@gmail.com",
+      "created_at": "2026-05-06T10:37:23.005Z"
+    },
+    {
+      "id": "voice-2492a6ee4801",
+      "type": "voice",
+      "fileId": "voice-2492a6ee4801",
+      "fileName": "voice-message-1778065394075.webm",
+      "storedFileName": "voice-2492a6ee4801.webm",
+      "url": "http://localhost:5050/uploads/voice-messages/voice-2492a6ee4801.webm",
+      "downloadUrl": "http://localhost:5050/uploads/voice-messages/voice-2492a6ee4801.webm",
+      "mimeType": "audio/webm",
+      "size": 34802,
+      "sizeLabel": "34 KB",
+      "duration": 4.200092,
+      "waveform": [
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        26,
+        43,
+        100,
+        17,
+        12,
+        24,
+        35,
+        21,
+        17,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12
+      ],
+      "uploadedBy": "dc762122-8493-4942-b278-e0df2332eb10",
+      "uploadedByEmail": "prodashchuk1@gmail.com",
+      "created_at": "2026-05-06T11:03:16.709Z"
+    },
+    {
+      "id": "voice-6ce21a62809a",
+      "type": "voice",
+      "fileId": "voice-6ce21a62809a",
+      "fileName": "voice-message-1778065858599.webm",
+      "storedFileName": "voice-6ce21a62809a.webm",
+      "url": "http://localhost:5050/uploads/voice-messages/voice-6ce21a62809a.webm",
+      "downloadUrl": "http://localhost:5050/uploads/voice-messages/voice-6ce21a62809a.webm",
+      "mimeType": "audio/webm",
+      "size": 19736,
+      "sizeLabel": "19 KB",
+      "duration": 2.34005,
+      "waveform": [
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        22,
+        37,
+        44,
+        100,
+        60,
+        28,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        34,
+        61,
+        35,
+        27,
+        36,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12
+      ],
+      "uploadedBy": "dc762122-8493-4942-b278-e0df2332eb10",
+      "uploadedByEmail": "prodashchuk1@gmail.com",
+      "created_at": "2026-05-06T11:11:00.218Z"
+    }
+  ],
+  "voiceListens": [
+    {
+      "id": "listen-1a5a09067a24",
+      "message_id": "message-d74e7c559e5847a7",
+      "user_id": "7fb66258-ec2d-4050-8fd0-14d349c5b4e8",
+      "listened_at": "2026-05-06T09:55:00.037Z"
+    },
+    {
+      "id": "listen-72c4ce512113",
+      "message_id": "message-8315e8625e3143f4",
+      "user_id": "7fb66258-ec2d-4050-8fd0-14d349c5b4e8",
+      "listened_at": "2026-05-06T09:59:36.204Z"
+    },
+    {
+      "id": "listen-b1a95900794e",
+      "message_id": "message-07879148c22e47da",
+      "user_id": "7fb66258-ec2d-4050-8fd0-14d349c5b4e8",
+      "listened_at": "2026-05-06T10:15:24.061Z"
+    },
+    {
+      "id": "listen-bc7c9ea308c6",
+      "message_id": "message-fd5c0b1b9e954fd8",
+      "user_id": "7fb66258-ec2d-4050-8fd0-14d349c5b4e8",
+      "listened_at": "2026-05-06T10:26:37.691Z"
+    },
+    {
+      "id": "listen-039c83eae09e",
+      "message_id": "message-9f4cc31142124242",
+      "user_id": "7fb66258-ec2d-4050-8fd0-14d349c5b4e8",
+      "listened_at": "2026-05-06T10:37:24.363Z"
+    },
+    {
+      "id": "listen-14f7f5231980",
+      "message_id": "message-de5a1ff5e10e4fa5",
+      "user_id": "dc762122-8493-4942-b278-e0df2332eb10",
+      "listened_at": "2026-05-06T11:03:18.023Z"
+    },
+    {
+      "id": "listen-9fd47a294879",
+      "message_id": "message-968229bb47694328",
+      "user_id": "dc762122-8493-4942-b278-e0df2332eb10",
+      "listened_at": "2026-05-06T11:11:02.798Z"
+    }
+  ],
+  "voicePreferences": []
 }

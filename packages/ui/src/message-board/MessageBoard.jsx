@@ -1,9 +1,8 @@
-import { useState, useEffect, useRef, useContext } from "react";
+import { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 
 import MessagePaneInput from "~/message-pane-input/MessagePaneInput";
 import MessagePane from "../message-pane/MessagePane";
-
 import { MessageBoardContainer } from "./MessageBoard.styled";
 import MoreMenu from "./components/more-menu/MoreMenu";
 import Overlay from "./components/overlay/Overlay";
@@ -32,14 +31,26 @@ function MessageBoard({
 }) {
   const [showMoreOptions, setShowMoreOptions] = useState(false);
   const [shouldScrollToBottom, setScrollToBottom] = useState(true);
-
   const [top, setTop] = useState(null);
   const [right, setRight] = useState(null);
   const [currentMessageId, setCurrentMessageId] = useState(null);
 
-  const handleSendMessage = (message, payload) => {
-    const shouldScroll = onSendMessage && onSendMessage(message, payload);
-    setScrollToBottom(shouldScroll);
+  const handleSendMessage = async (message, payload) => {
+    if (typeof onSendMessage !== "function") {
+      return false;
+    }
+
+    try {
+      const shouldScroll = await onSendMessage(message, payload);
+      const normalizedShouldScroll = shouldScroll !== false;
+
+      setScrollToBottom(normalizedShouldScroll);
+
+      return normalizedShouldScroll;
+    } catch (error) {
+      setScrollToBottom(false);
+      throw error;
+    }
   };
 
   function handleOverlayClicked() {
@@ -51,6 +62,7 @@ function MessageBoard({
     setShowMoreOptions(!showMoreOptions);
     setTop(event.clientY);
     setRight(window.innerWidth - event.clientX);
+
     if (window.innerHeight - event.clientY < 320) {
       setTop(event.clientY - 320);
     }
@@ -65,9 +77,11 @@ function MessageBoard({
     if (window.innerHeight - event.clientY < 320) {
       setTop(event.clientY - 320);
     }
+
     if (event.clientX < 288) {
       setRight(event.clientX + 300);
     }
+
     if (window.innerWidth < 500) {
       setRight(20);
       setTop(100);
@@ -76,11 +90,13 @@ function MessageBoard({
 
   function handleEmojiClicked(event, emojiObject, messageId) {
     const message_id = messageId || currentMessageId;
+
     onReact && onReact(event, emojiObject, message_id);
     setScrollToBottom(false);
   }
 
   const messagesEndRef = useRef(null);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView("auto");
   };
@@ -90,7 +106,7 @@ function MessageBoard({
       shouldScrollToBottom && scrollToBottom();
       setScrollToBottom(true);
     }
-  }, [messages, down]);
+  }, [messages, down, shouldScrollToBottom]);
 
   return (
     <>
@@ -98,7 +114,7 @@ function MessageBoard({
         <div className="MsgBoard" onScroll={onHandleScroll}>
           {messages.map((message, i) => (
             <MessagePane
-              key={`message-item-${i}`}
+              key={`message-item-${message._id || message.message_id || i}`}
               onShowMoreOptions={handleShowMoreOptions}
               onShowEmoji={handleShowEmoji}
               onEmojiClicked={handleEmojiClicked}
@@ -107,14 +123,17 @@ function MessageBoard({
               onVoiceMessageListened={onVoiceMessageListened}
             />
           ))}
+
           {isPending &&
             sentMessage.map((message, i) => (
-              <div key={i} style={{ color: "grey" }}>
+              <div key={`pending-message-${i}`} style={{ color: "grey" }}>
                 <MessagePane message={message} />
               </div>
             ))}
+
           <div ref={messagesEndRef} />
         </div>
+
         {isLoadingMessages && (
           <div className="text-center">
             <div
@@ -126,6 +145,7 @@ function MessageBoard({
             </div>
           </div>
         )}
+
         <div className="input-text">
           <MessagePaneInput
             onSendMessage={handleSendMessage}
@@ -134,6 +154,7 @@ function MessageBoard({
           />
         </div>
       </MessageBoardContainer>
+
       {showMoreOptions && (
         <div>
           <Overlay handleOverlayClicked={handleOverlayClicked} />
@@ -154,14 +175,23 @@ function MessageBoard({
     </>
   );
 }
+
 MessageBoard.propTypes = {
   currentUserId: PropTypes.string,
+  down: PropTypes.bool,
+  height: PropTypes.string,
+  isLoadingMessages: PropTypes.bool,
+  isPending: PropTypes.bool,
   messages: PropTypes.array.isRequired,
-  onSendMessage: PropTypes.func,
+  onHandleScroll: PropTypes.func,
+  onReact: PropTypes.func,
   onSendAttachedFile: PropTypes.func,
+  onSendMessage: PropTypes.func,
   onVoiceMessageListened: PropTypes.func,
-  voiceMessageConfig: PropTypes.object,
-  onReact: PropTypes.func
+  sentMessage: PropTypes.array,
+  setShowEmoji: PropTypes.func,
+  showEmoji: PropTypes.bool,
+  voiceMessageConfig: PropTypes.object
 };
 
 export default MessageBoard;
